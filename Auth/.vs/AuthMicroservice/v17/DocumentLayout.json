@@ -3,6 +3,26 @@
   "WorkspaceRootPath": "C:\\alamin\\AuthService\\Auth\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{283BE634-14EE-470A-BE7B-4829A20DA1EC}|AuthMicroservice\\AuthMicroservice.csproj|c:\\alamin\\authservice\\auth\\authmicroservice\\controller\\usercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{283BE634-14EE-470A-BE7B-4829A20DA1EC}|AuthMicroservice\\AuthMicroservice.csproj|solutionrelative:authmicroservice\\controller\\usercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{283BE634-14EE-470A-BE7B-4829A20DA1EC}|AuthMicroservice\\AuthMicroservice.csproj|c:\\alamin\\authservice\\auth\\authmicroservice\\model\\atleastonerequiredattribute.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{283BE634-14EE-470A-BE7B-4829A20DA1EC}|AuthMicroservice\\AuthMicroservice.csproj|solutionrelative:authmicroservice\\model\\atleastonerequiredattribute.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{283BE634-14EE-470A-BE7B-4829A20DA1EC}|AuthMicroservice\\AuthMicroservice.csproj|c:\\alamin\\authservice\\auth\\authmicroservice\\controller\\logincontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{283BE634-14EE-470A-BE7B-4829A20DA1EC}|AuthMicroservice\\AuthMicroservice.csproj|solutionrelative:authmicroservice\\controller\\logincontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{283BE634-14EE-470A-BE7B-4829A20DA1EC}|AuthMicroservice\\AuthMicroservice.csproj|c:\\alamin\\authservice\\auth\\authmicroservice\\controller\\applicationcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{283BE634-14EE-470A-BE7B-4829A20DA1EC}|AuthMicroservice\\AuthMicroservice.csproj|solutionrelative:authmicroservice\\controller\\applicationcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{283BE634-14EE-470A-BE7B-4829A20DA1EC}|AuthMicroservice\\AuthMicroservice.csproj|c:\\alamin\\authservice\\auth\\authmicroservice\\service\\userservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{283BE634-14EE-470A-BE7B-4829A20DA1EC}|AuthMicroservice\\AuthMicroservice.csproj|solutionrelative:authmicroservice\\service\\userservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{283BE634-14EE-470A-BE7B-4829A20DA1EC}|AuthMicroservice\\AuthMicroservice.csproj|c:\\alamin\\authservice\\auth\\authmicroservice\\controller\\newslettercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{283BE634-14EE-470A-BE7B-4829A20DA1EC}|AuthMicroservice\\AuthMicroservice.csproj|solutionrelative:authmicroservice\\controller\\newslettercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
@@ -11,32 +31,12 @@
       "RelativeMoniker": "D:0:0:{283BE634-14EE-470A-BE7B-4829A20DA1EC}|AuthMicroservice\\AuthMicroservice.csproj|solutionrelative:authmicroservice\\controller\\smscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{283BE634-14EE-470A-BE7B-4829A20DA1EC}|AuthMicroservice\\AuthMicroservice.csproj|c:\\alamin\\authservice\\auth\\authmicroservice\\controller\\usercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{283BE634-14EE-470A-BE7B-4829A20DA1EC}|AuthMicroservice\\AuthMicroservice.csproj|solutionrelative:authmicroservice\\controller\\usercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{283BE634-14EE-470A-BE7B-4829A20DA1EC}|AuthMicroservice\\AuthMicroservice.csproj|c:\\alamin\\authservice\\auth\\authmicroservice\\controller\\logincontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{283BE634-14EE-470A-BE7B-4829A20DA1EC}|AuthMicroservice\\AuthMicroservice.csproj|solutionrelative:authmicroservice\\controller\\logincontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{283BE634-14EE-470A-BE7B-4829A20DA1EC}|AuthMicroservice\\AuthMicroservice.csproj|c:\\alamin\\authservice\\auth\\authmicroservice\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
-      "RelativeMoniker": "D:0:0:{283BE634-14EE-470A-BE7B-4829A20DA1EC}|AuthMicroservice\\AuthMicroservice.csproj|solutionrelative:authmicroservice\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{283BE634-14EE-470A-BE7B-4829A20DA1EC}|AuthMicroservice\\AuthMicroservice.csproj|c:\\alamin\\authservice\\auth\\authmicroservice\\controller\\applicationcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{283BE634-14EE-470A-BE7B-4829A20DA1EC}|AuthMicroservice\\AuthMicroservice.csproj|solutionrelative:authmicroservice\\controller\\applicationcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{283BE634-14EE-470A-BE7B-4829A20DA1EC}|AuthMicroservice\\AuthMicroservice.csproj|c:\\alamin\\authservice\\auth\\authmicroservice\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{283BE634-14EE-470A-BE7B-4829A20DA1EC}|AuthMicroservice\\AuthMicroservice.csproj|solutionrelative:authmicroservice\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{283BE634-14EE-470A-BE7B-4829A20DA1EC}|AuthMicroservice\\AuthMicroservice.csproj|c:\\alamin\\authservice\\auth\\authmicroservice\\service\\loginservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{283BE634-14EE-470A-BE7B-4829A20DA1EC}|AuthMicroservice\\AuthMicroservice.csproj|solutionrelative:authmicroservice\\service\\loginservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{283BE634-14EE-470A-BE7B-4829A20DA1EC}|AuthMicroservice\\AuthMicroservice.csproj|c:\\alamin\\authservice\\auth\\authmicroservice\\service\\userservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{283BE634-14EE-470A-BE7B-4829A20DA1EC}|AuthMicroservice\\AuthMicroservice.csproj|solutionrelative:authmicroservice\\service\\userservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{283BE634-14EE-470A-BE7B-4829A20DA1EC}|AuthMicroservice\\AuthMicroservice.csproj|c:\\alamin\\authservice\\auth\\authmicroservice\\model\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -58,7 +58,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 22,
+          "SelectedChildIndex": 29,
           "Children": [
             {
               "$type": "Document",
@@ -158,30 +158,45 @@
               "Name": "ST:0:0:{3ae79031-e1bc-11d0-8f78-00a0c9110057}"
             },
             {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{d78612c7-9962-4b83-95d9-268046dad23a}"
+            },
+            {
               "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "NewsletterController.cs",
-              "DocumentMoniker": "C:\\alamin\\AuthService\\Auth\\AuthMicroservice\\Controller\\NewsletterController.cs",
-              "RelativeDocumentMoniker": "AuthMicroservice\\Controller\\NewsletterController.cs",
-              "ToolTip": "C:\\alamin\\AuthService\\Auth\\AuthMicroservice\\Controller\\NewsletterController.cs",
-              "RelativeToolTip": "AuthMicroservice\\Controller\\NewsletterController.cs",
-              "ViewState": "AgIAAKIAAAAAAAAAAAAAAKYAAAAiAAAAAAAAAA==",
+              "DocumentIndex": 1,
+              "Title": "AtLeastOneRequiredAttribute.cs",
+              "DocumentMoniker": "C:\\alamin\\AuthService\\Auth\\AuthMicroservice\\Model\\AtLeastOneRequiredAttribute.cs",
+              "RelativeDocumentMoniker": "AuthMicroservice\\Model\\AtLeastOneRequiredAttribute.cs",
+              "ToolTip": "C:\\alamin\\AuthService\\Auth\\AuthMicroservice\\Model\\AtLeastOneRequiredAttribute.cs",
+              "RelativeToolTip": "AuthMicroservice\\Model\\AtLeastOneRequiredAttribute.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAB4AAAAFAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-01-11T13:52:31.119Z",
+              "WhenOpened": "2026-03-25T05:34:35.443Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 5,
+              "Title": "NewsletterController.cs",
+              "DocumentMoniker": "C:\\alamin\\AuthService\\Auth\\AuthMicroservice\\Controller\\NewsletterController.cs",
+              "RelativeDocumentMoniker": "AuthMicroservice\\Controller\\NewsletterController.cs",
+              "ToolTip": "C:\\alamin\\AuthService\\Auth\\AuthMicroservice\\Controller\\NewsletterController.cs",
+              "RelativeToolTip": "AuthMicroservice\\Controller\\NewsletterController.cs",
+              "ViewState": "AgIAAKIAAAAAAAAAAAAAAKUAAAAhAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-11T13:52:31.119Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
               "Title": "ApplicationController.cs",
               "DocumentMoniker": "C:\\alamin\\AuthService\\Auth\\AuthMicroservice\\Controller\\ApplicationController.cs",
               "RelativeDocumentMoniker": "AuthMicroservice\\Controller\\ApplicationController.cs",
               "ToolTip": "C:\\alamin\\AuthService\\Auth\\AuthMicroservice\\Controller\\ApplicationController.cs",
               "RelativeToolTip": "AuthMicroservice\\Controller\\ApplicationController.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAACQAAABnAAAAAAAAAA==",
+              "ViewState": "AgIAABMAAAAAAAAAAAAQwCQAAABnAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-11-18T15:07:25.966Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-11-18T15:07:25.966Z"
             },
             {
               "$type": "Document",
@@ -197,58 +212,44 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 4,
               "Title": "UserService.cs",
               "DocumentMoniker": "C:\\alamin\\AuthService\\Auth\\AuthMicroservice\\Service\\UserService.cs",
               "RelativeDocumentMoniker": "AuthMicroservice\\Service\\UserService.cs",
               "ToolTip": "C:\\alamin\\AuthService\\Auth\\AuthMicroservice\\Service\\UserService.cs",
               "RelativeToolTip": "AuthMicroservice\\Service\\UserService.cs",
-              "ViewState": "AgIAAKsAAAAAAAAAAAAqwOYAAAAyAAAAAAAAAA==",
+              "ViewState": "AgIAADwAAAAAAAAAAAAQwEUAAAAUAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-07-01T11:52:14.123Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "appsettings.json",
-              "DocumentMoniker": "C:\\alamin\\AuthService\\Auth\\AuthMicroservice\\appsettings.json",
-              "RelativeDocumentMoniker": "AuthMicroservice\\appsettings.json",
-              "ToolTip": "C:\\alamin\\AuthService\\Auth\\AuthMicroservice\\appsettings.json",
-              "RelativeToolTip": "AuthMicroservice\\appsettings.json",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2025-04-07T14:25:32.768Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 2,
               "Title": "LoginController.cs",
               "DocumentMoniker": "C:\\alamin\\AuthService\\Auth\\AuthMicroservice\\Controller\\LoginController.cs",
               "RelativeDocumentMoniker": "AuthMicroservice\\Controller\\LoginController.cs",
               "ToolTip": "C:\\alamin\\AuthService\\Auth\\AuthMicroservice\\Controller\\LoginController.cs",
               "RelativeToolTip": "AuthMicroservice\\Controller\\LoginController.cs",
-              "ViewState": "AgIAAD8AAAAAAAAAAAAAADUAAAANAAAAAAAAAA==",
+              "ViewState": "AgIAAAwAAAAAAAAAAAAAAFcAAAAFAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-04-04T15:05:40.579Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-04-04T15:05:40.579Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 0,
               "Title": "UserController.cs",
               "DocumentMoniker": "C:\\alamin\\AuthService\\Auth\\AuthMicroservice\\Controller\\UserController.cs",
               "RelativeDocumentMoniker": "AuthMicroservice\\Controller\\UserController.cs",
               "ToolTip": "C:\\alamin\\AuthService\\Auth\\AuthMicroservice\\Controller\\UserController.cs",
               "RelativeToolTip": "AuthMicroservice\\Controller\\UserController.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAACMAAABdAAAAAAAAAA==",
+              "ViewState": "AgIAAPABAAAAAAAAAAA2wPYBAAAJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-04-04T14:58:31.669Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 6,
               "Title": "SmsController.cs",
               "DocumentMoniker": "C:\\alamin\\AuthService\\Auth\\AuthMicroservice\\Controller\\SmsController.cs",
               "RelativeDocumentMoniker": "AuthMicroservice\\Controller\\SmsController.cs",
@@ -256,12 +257,11 @@
               "RelativeToolTip": "AuthMicroservice\\Controller\\SmsController.cs",
               "ViewState": "AgIAAAYAAAAAAAAAAAAUwAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-08-19T06:26:07.9Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-08-19T06:26:07.9Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 8,
               "Title": "LoginService.cs",
               "DocumentMoniker": "C:\\alamin\\AuthService\\Auth\\AuthMicroservice\\Service\\LoginService.cs",
               "RelativeDocumentMoniker": "AuthMicroservice\\Service\\LoginService.cs",
@@ -273,7 +273,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 7,
               "Title": "Program.cs",
               "DocumentMoniker": "C:\\alamin\\AuthService\\Auth\\AuthMicroservice\\Program.cs",
               "RelativeDocumentMoniker": "AuthMicroservice\\Program.cs",
@@ -294,10 +294,6 @@
               "ViewState": "AgIAAAUAAAAAAAAAAAAxwBgAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-03-13T05:21:14.362Z"
-            },
-            {
-              "$type": "Bookmark",
-              "Name": "ST:0:0:{d78612c7-9962-4b83-95d9-268046dad23a}"
             }
           ]
         },

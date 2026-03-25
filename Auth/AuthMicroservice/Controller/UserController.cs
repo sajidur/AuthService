@@ -509,16 +509,15 @@ namespace AuthMicroservice.Controller
         public string Password { get; set; }
 
     }
-   
 
-    [AtLeastOneRequired] // Apply the custom validation attribute here
+
+    [AtLeastOneRequired]
     public class UserName
     {
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public string Email { get; set; }
-        public string MobileNumber { get; set; }
-       
+        public string? FirstName { get; set; }
+        public string? LastName { get; set; }
+        public string? Email { get; set; }
+        public string? MobileNumber { get; set; }
     }
     public class GoogleLoginViewModel
     {
