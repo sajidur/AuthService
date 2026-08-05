@@ -26,6 +26,7 @@ builder.Services.AddDbContext<UserDbContext>();
 builder.Services.AddControllers();
 builder.Services.AddApplicationServices();
 builder.Services.AddHostedService<CampaignSchedulerService>();
+builder.Services.AddHostedService<ImapPollingService>();
 builder.Services.AddDbContext<UserDbContext>(options =>
     options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"),
     new MySqlServerVersion(new Version(8, 0, 21))),ServiceLifetime.Scoped);

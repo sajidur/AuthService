@@ -96,6 +96,16 @@ namespace AuthMicroservice.Service
             existingContact.LastInteractionDate = contact.LastInteractionDate;
             existingContact.PreferredLanguage = contact.PreferredLanguage;
             existingContact.Status = contact.Status;
+            existingContact.Nid = contact.Nid;
+            existingContact.HomeAddress = contact.HomeAddress;
+            existingContact.WorkAddress = contact.WorkAddress;
+            existingContact.District = contact.District;
+            existingContact.Division = contact.Division;
+            existingContact.Thana = contact.Thana;
+            existingContact.Gps = contact.Gps;
+            existingContact.HealthData = contact.HealthData;
+            existingContact.ExtraData = contact.ExtraData;
+            existingContact.NextContactDate = contact.NextContactDate;
 
             await _contactRepository.UpdateAsync(existingContact);
         }
@@ -179,6 +189,15 @@ namespace AuthMicroservice.Service
             existing.City = FirstNonEmpty(incoming.City, existing.City);
             existing.TimeZone = FirstNonEmpty(incoming.TimeZone, existing.TimeZone);
             existing.PreferredLanguage = FirstNonEmpty(incoming.PreferredLanguage, existing.PreferredLanguage);
+            existing.Nid = FirstNonEmpty(incoming.Nid, existing.Nid);
+            existing.HomeAddress = FirstNonEmpty(incoming.HomeAddress, existing.HomeAddress);
+            existing.WorkAddress = FirstNonEmpty(incoming.WorkAddress, existing.WorkAddress);
+            existing.District = FirstNonEmpty(incoming.District, existing.District);
+            existing.Division = FirstNonEmpty(incoming.Division, existing.Division);
+            existing.Thana = FirstNonEmpty(incoming.Thana, existing.Thana);
+            existing.Gps = FirstNonEmpty(incoming.Gps, existing.Gps);
+            existing.HealthData = FirstNonEmpty(incoming.HealthData, existing.HealthData);
+            existing.ExtraData = FirstNonEmpty(incoming.ExtraData, existing.ExtraData);
             if (incoming.EngagementScore.HasValue)
                 existing.EngagementScore = incoming.EngagementScore;
         }

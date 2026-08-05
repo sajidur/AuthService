@@ -4,6 +4,7 @@ using AuthMicroservice.Repository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AuthMicroservice.Migrations
 {
     [DbContext(typeof(UserDbContext))]
-    partial class UserDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260805121603_AddContactExtendedFields")]
+    partial class AddContactExtendedFields
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -227,20 +230,11 @@ namespace AuthMicroservice.Migrations
                     b.Property<string>("JobTitle")
                         .HasColumnType("longtext");
 
-                    b.Property<DateTime?>("LastEmailDate")
-                        .HasColumnType("datetime(6)");
-
                     b.Property<DateTime?>("LastInteractionDate")
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("LastName")
                         .HasColumnType("longtext");
-
-                    b.Property<DateTime?>("LastSmsDate")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<DateTime?>("NextContactDate")
-                        .HasColumnType("datetime(6)");
 
                     b.Property<string>("Nid")
                         .HasColumnType("longtext");
@@ -299,60 +293,6 @@ namespace AuthMicroservice.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Contacts");
-                });
-
-            modelBuilder.Entity("AuthMicroservice.Model.ContactActivity", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("char(36)");
-
-                    b.Property<Guid>("ApplicationId")
-                        .HasColumnType("char(36)");
-
-                    b.Property<Guid>("ContactId")
-                        .HasColumnType("char(36)");
-
-                    b.Property<DateTime>("CreatedBy")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("tinyint(1)");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("tinyint(1)");
-
-                    b.Property<string>("Message")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("Remarks")
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("Subject")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<DateTime?>("UpdatedBy")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<DateTime?>("UpdatedDate")
-                        .HasColumnType("datetime(6)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("ContactActivities");
                 });
 
             modelBuilder.Entity("AuthMicroservice.Model.EmailHistory", b =>
@@ -439,23 +379,11 @@ namespace AuthMicroservice.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<bool>("ImapEnableSsl")
-                        .HasColumnType("tinyint(1)");
-
-                    b.Property<bool>("ImapEnabled")
-                        .HasColumnType("tinyint(1)");
-
-                    b.Property<int?>("ImapPort")
-                        .HasColumnType("int");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("tinyint(1)");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("tinyint(1)");
-
-                    b.Property<long?>("LastProcessedImapUid")
-                        .HasColumnType("bigint");
 
                     b.Property<string>("Password")
                         .IsRequired()

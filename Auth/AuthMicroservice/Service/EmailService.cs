@@ -37,11 +37,13 @@ namespace AuthMicroservice.Service
     {
         private readonly ISmtpConfigService _smtpConfigService;
         private readonly IEmailHistoryRepository _emailHistoryRepository;
+        private readonly IContactActivityService _contactActivityService;
 
-        public EmailService(ISmtpConfigService smtpConfigService, IEmailHistoryRepository emailHistoryRepository)
+        public EmailService(ISmtpConfigService smtpConfigService, IEmailHistoryRepository emailHistoryRepository, IContactActivityService contactActivityService)
         {
             _smtpConfigService = smtpConfigService;
             _emailHistoryRepository = emailHistoryRepository;
+            _contactActivityService = contactActivityService;
         }
 
         public async Task<string> SendEmailAsync(Guid applicationId, string subject, string body, List<string> to)
@@ -107,6 +109,12 @@ namespace AuthMicroservice.Service
 
             await _emailHistoryRepository.AddAsync(emailHistory);
 
+            var activityStatus = status == "Sent" ? "Sent" : "Failed";
+            foreach (var recipientEmail in to)
+            {
+                await _contactActivityService.LogActivityAsync(applicationId, recipientEmail, "Email", subject, body, activityStatus);
+            }
+
             return status;
         }
 
@@ -142,13 +150,17 @@ namespace AuthMicroservice.Service
                     if (!variables.ContainsKey("date"))
                         variables["date"] = DateTime.Now.ToString("MMMM d, yyyy");
 
+                    var renderedSubject = ApplyVariables(subjectTemplate, variables);
+                    var renderedBody = ApplyVariables(bodyTemplate, variables);
+                    var recipientSucceeded = true;
+
                     try
                     {
                         using var mailMessage = new MailMessage
                         {
                             From = new MailAddress(smtpConfig.FromAddress, smtpConfig.FromName),
-                            Subject = ApplyVariables(subjectTemplate, variables),
-                            Body = ApplyVariables(bodyTemplate, variables),
+                            Subject = renderedSubject,
+                            Body = renderedBody,
                             IsBodyHtml = true,
                         };
                         mailMessage.To.Add(recipient.Email);
@@ -159,7 +171,10 @@ namespace AuthMicroservice.Service
                     catch
                     {
                         failedCount++;
+                        recipientSucceeded = false;
                     }
+
+                    await _contactActivityService.LogActivityAsync(applicationId, recipient.Email, "Email", renderedSubject, renderedBody, recipientSucceeded ? "Sent" : "Failed");
                 }
             }
 

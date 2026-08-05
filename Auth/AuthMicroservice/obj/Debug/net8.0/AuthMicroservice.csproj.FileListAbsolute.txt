@@ -1151,3 +1151,7 @@ C:\alamin\AuthService\Auth\AuthMicroservice\obj\Debug\net8.0\AuthMicroservice.pd
 C:\alamin\AuthService\Auth\AuthMicroservice\obj\Debug\net8.0\AuthMicroservice.genruntimeconfig.cache
 C:\alamin\AuthService\Auth\AuthMicroservice\obj\Debug\net8.0\ref\AuthMicroservice.dll
 C:\Users\sajidur\Project\AuthService\Auth\AuthMicroservice\obj\Debug\net8.0\swae.build.ex.cache
+C:\Users\sajidur\Project\AuthService\Auth\AuthMicroservice\bin\Debug\net8.0\MailKit.dll
+C:\Users\sajidur\Project\AuthService\Auth\AuthMicroservice\bin\Debug\net8.0\MimeKit.dll
+C:\Users\sajidur\Project\AuthService\Auth\AuthMicroservice\bin\Debug\net8.0\System.Security.Cryptography.Pkcs.dll
+C:\Users\sajidur\Project\AuthService\Auth\AuthMicroservice\bin\Debug\net8.0\runtimes\win\lib\net8.0\System.Security.Cryptography.Pkcs.dll

@@ -4,6 +4,7 @@ using AuthMicroservice.Repository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AuthMicroservice.Migrations
 {
     [DbContext(typeof(UserDbContext))]
-    partial class UserDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260805152128_AddContactNextContactDate")]
+    partial class AddContactNextContactDate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -227,17 +230,11 @@ namespace AuthMicroservice.Migrations
                     b.Property<string>("JobTitle")
                         .HasColumnType("longtext");
 
-                    b.Property<DateTime?>("LastEmailDate")
-                        .HasColumnType("datetime(6)");
-
                     b.Property<DateTime?>("LastInteractionDate")
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("LastName")
                         .HasColumnType("longtext");
-
-                    b.Property<DateTime?>("LastSmsDate")
-                        .HasColumnType("datetime(6)");
 
                     b.Property<DateTime?>("NextContactDate")
                         .HasColumnType("datetime(6)");
@@ -439,23 +436,11 @@ namespace AuthMicroservice.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<bool>("ImapEnableSsl")
-                        .HasColumnType("tinyint(1)");
-
-                    b.Property<bool>("ImapEnabled")
-                        .HasColumnType("tinyint(1)");
-
-                    b.Property<int?>("ImapPort")
-                        .HasColumnType("int");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("tinyint(1)");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("tinyint(1)");
-
-                    b.Property<long?>("LastProcessedImapUid")
-                        .HasColumnType("bigint");
 
                     b.Property<string>("Password")
                         .IsRequired()

@@ -55,6 +55,9 @@ namespace AuthMicroservice.Service
             existingSmtpConfig.EnableSsl = smtpConfig.EnableSsl;
             existingSmtpConfig.FromAddress = smtpConfig.FromAddress;
             existingSmtpConfig.FromName = smtpConfig.FromName;
+            existingSmtpConfig.ImapEnabled = smtpConfig.ImapEnabled;
+            existingSmtpConfig.ImapPort = smtpConfig.ImapPort;
+            existingSmtpConfig.ImapEnableSsl = smtpConfig.ImapEnableSsl;
             existingSmtpConfig.ApplicationId = smtpConfig.ApplicationId;
             await _smtpConfigRepository.UpdateAsync(existingSmtpConfig);
         }

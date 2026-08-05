@@ -3,6 +3,10 @@
   "WorkspaceRootPath": "C:\\Users\\sajidur\\Project\\AuthService\\Auth\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{283BE634-14EE-470A-BE7B-4829A20DA1EC}|AuthMicroservice\\AuthMicroservice.csproj|c:\\users\\sajidur\\project\\authservice\\auth\\authmicroservice\\controller\\campaigncontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{283BE634-14EE-470A-BE7B-4829A20DA1EC}|AuthMicroservice\\AuthMicroservice.csproj|solutionrelative:authmicroservice\\controller\\campaigncontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{283BE634-14EE-470A-BE7B-4829A20DA1EC}|AuthMicroservice\\AuthMicroservice.csproj|c:\\users\\sajidur\\project\\authservice\\auth\\authmicroservice\\model\\campaign.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{283BE634-14EE-470A-BE7B-4829A20DA1EC}|AuthMicroservice\\AuthMicroservice.csproj|solutionrelative:authmicroservice\\model\\campaign.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
@@ -62,11 +66,11 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 2,
+          "SelectedChildIndex": 1,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 10,
+              "DocumentIndex": 11,
               "Title": "User.cs",
               "DocumentMoniker": "C:\\Users\\sajidur\\Project\\AuthService\\Auth\\AuthMicroservice\\Model\\User.cs",
               "RelativeDocumentMoniker": "AuthMicroservice\\Model\\User.cs",
@@ -79,25 +83,38 @@
               "EditorCaption": ""
             },
             {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "CampaignController.cs",
+              "DocumentMoniker": "C:\\Users\\sajidur\\Project\\AuthService\\Auth\\AuthMicroservice\\Controller\\CampaignController.cs",
+              "RelativeDocumentMoniker": "AuthMicroservice\\Controller\\CampaignController.cs",
+              "ToolTip": "C:\\Users\\sajidur\\Project\\AuthService\\Auth\\AuthMicroservice\\Controller\\CampaignController.cs",
+              "RelativeToolTip": "AuthMicroservice\\Controller\\CampaignController.cs",
+              "ViewState": "AgIAAFAAAAAAAAAAAAAswAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-08-05T08:45:36.563Z",
+              "EditorCaption": ""
+            },
+            {
               "$type": "Bookmark",
               "Name": "ST:0:0:{cce594b6-0c39-4442-ba28-10c64ac7e89f}"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 1,
               "Title": "Campaign.cs",
               "DocumentMoniker": "C:\\Users\\sajidur\\Project\\AuthService\\Auth\\AuthMicroservice\\Model\\Campaign.cs",
               "RelativeDocumentMoniker": "AuthMicroservice\\Model\\Campaign.cs",
               "ToolTip": "C:\\Users\\sajidur\\Project\\AuthService\\Auth\\AuthMicroservice\\Model\\Campaign.cs",
               "RelativeToolTip": "AuthMicroservice\\Model\\Campaign.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAAoAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAA4AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-08-05T07:34:19.124Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 7,
               "Title": "NewsletterController.cs",
               "DocumentMoniker": "C:\\Users\\sajidur\\Project\\AuthService\\Auth\\AuthMicroservice\\Controller\\NewsletterController.cs",
               "RelativeDocumentMoniker": "AuthMicroservice\\Controller\\NewsletterController.cs",
@@ -110,7 +127,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 5,
               "Title": "ApplicationController.cs",
               "DocumentMoniker": "C:\\Users\\sajidur\\Project\\AuthService\\Auth\\AuthMicroservice\\Controller\\ApplicationController.cs",
               "RelativeDocumentMoniker": "AuthMicroservice\\Controller\\ApplicationController.cs",
@@ -123,7 +140,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 11,
+              "DocumentIndex": 12,
               "Title": "UserRole.cs",
               "DocumentMoniker": "C:\\Users\\sajidur\\Project\\AuthService\\Auth\\AuthMicroservice\\Model\\UserRole.cs",
               "RelativeDocumentMoniker": "AuthMicroservice\\Model\\UserRole.cs",
@@ -135,7 +152,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 6,
               "Title": "UserService.cs",
               "DocumentMoniker": "C:\\Users\\sajidur\\Project\\AuthService\\Auth\\AuthMicroservice\\Service\\UserService.cs",
               "RelativeDocumentMoniker": "AuthMicroservice\\Service\\UserService.cs",
@@ -147,7 +164,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 2,
               "Title": "UserController.cs",
               "DocumentMoniker": "C:\\Users\\sajidur\\Project\\AuthService\\Auth\\AuthMicroservice\\Controller\\UserController.cs",
               "RelativeDocumentMoniker": "AuthMicroservice\\Controller\\UserController.cs",
@@ -160,7 +177,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 3,
               "Title": "AtLeastOneRequiredAttribute.cs",
               "DocumentMoniker": "C:\\Users\\sajidur\\Project\\AuthService\\Auth\\AuthMicroservice\\Model\\AtLeastOneRequiredAttribute.cs",
               "RelativeDocumentMoniker": "AuthMicroservice\\Model\\AtLeastOneRequiredAttribute.cs",
@@ -172,7 +189,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 4,
               "Title": "LoginController.cs",
               "DocumentMoniker": "C:\\Users\\sajidur\\Project\\AuthService\\Auth\\AuthMicroservice\\Controller\\LoginController.cs",
               "RelativeDocumentMoniker": "AuthMicroservice\\Controller\\LoginController.cs",
@@ -185,7 +202,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 8,
               "Title": "SmsController.cs",
               "DocumentMoniker": "C:\\Users\\sajidur\\Project\\AuthService\\Auth\\AuthMicroservice\\Controller\\SmsController.cs",
               "RelativeDocumentMoniker": "AuthMicroservice\\Controller\\SmsController.cs",
@@ -197,7 +214,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 9,
+              "DocumentIndex": 10,
               "Title": "LoginService.cs",
               "DocumentMoniker": "C:\\Users\\sajidur\\Project\\AuthService\\Auth\\AuthMicroservice\\Service\\LoginService.cs",
               "RelativeDocumentMoniker": "AuthMicroservice\\Service\\LoginService.cs",
@@ -209,7 +226,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 9,
               "Title": "Program.cs",
               "DocumentMoniker": "C:\\Users\\sajidur\\Project\\AuthService\\Auth\\AuthMicroservice\\Program.cs",
               "RelativeDocumentMoniker": "AuthMicroservice\\Program.cs",
@@ -221,7 +238,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 12,
+              "DocumentIndex": 13,
               "Title": "ServiceCollectionExtensions.cs",
               "DocumentMoniker": "C:\\Users\\sajidur\\Project\\AuthService\\Auth\\AuthMicroservice\\ServiceCollectionExtensions.cs",
               "RelativeDocumentMoniker": "AuthMicroservice\\ServiceCollectionExtensions.cs",

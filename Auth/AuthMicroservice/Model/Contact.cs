@@ -32,5 +32,17 @@ namespace AuthMicroservice.Model
         public DateTime? VerifiedDate { get; set; }
         public string? VerificationToken { get; set; }
         public DateTime? VerificationTokenExpiry { get; set; }
+        public string? Nid { get; set; }
+        public string? HomeAddress { get; set; }
+        public string? WorkAddress { get; set; }
+        public string? District { get; set; }
+        public string? Division { get; set; }
+        public string? Thana { get; set; }
+        public string? Gps { get; set; }
+        public string? HealthData { get; set; }
+        public string? ExtraData { get; set; }
+        public DateTime? NextContactDate { get; set; }
+        public DateTime? LastEmailDate { get; set; }
+        public DateTime? LastSmsDate { get; set; }
     }
 }

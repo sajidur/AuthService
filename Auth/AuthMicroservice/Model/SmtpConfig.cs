@@ -17,6 +17,11 @@ namespace AuthMicroservice.Model
         public string FromAddress { get; set; }
         public string FromName { get; set; }
 
+        public bool ImapEnabled { get; set; }
+        public int? ImapPort { get; set; }
+        public bool ImapEnableSsl { get; set; } = true;
+        public long? LastProcessedImapUid { get; set; }
+
         [Required]
         public Guid ApplicationId { get; set; }
     }

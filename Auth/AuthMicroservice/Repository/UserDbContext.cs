@@ -26,6 +26,7 @@ namespace AuthMicroservice.Repository
         public DbSet<EmailHistory> EmailHistories { get; set; }
         public DbSet<SmtpConfig> SmtpConfigs { get; set; }
         public DbSet<Campaign> Campaigns { get; set; }
+        public DbSet<ContactActivity> ContactActivities { get; set; }
 
 
         //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -72,6 +73,9 @@ namespace AuthMicroservice.Repository
             modelBuilder.Entity<EmailHistory>().Property(e => e.SentDate).HasConversion(UtcDateTimeConverter);
             modelBuilder.Entity<Contact>().Property(c => c.VerifiedDate).HasConversion(UtcNullableDateTimeConverter);
             modelBuilder.Entity<Contact>().Property(c => c.VerificationTokenExpiry).HasConversion(UtcNullableDateTimeConverter);
+            modelBuilder.Entity<Contact>().Property(c => c.NextContactDate).HasConversion(UtcNullableDateTimeConverter);
+            modelBuilder.Entity<Contact>().Property(c => c.LastEmailDate).HasConversion(UtcNullableDateTimeConverter);
+            modelBuilder.Entity<Contact>().Property(c => c.LastSmsDate).HasConversion(UtcNullableDateTimeConverter);
             modelBuilder.Entity<Subscriber>().Property(s => s.VerifiedDate).HasConversion(UtcNullableDateTimeConverter);
             modelBuilder.Entity<Subscriber>().Property(s => s.VerificationTokenExpiry).HasConversion(UtcNullableDateTimeConverter);
             modelBuilder.Entity<User>().Property(u => u.EmailConfirmationTokenExpiry).HasConversion(UtcNullableDateTimeConverter);
