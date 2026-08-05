@@ -20,17 +20,36 @@ namespace AuthMicroservice.Controller
     {
         private readonly IUserService _userService;
         private readonly IApplicationService _applicationService;
+        private readonly IVerificationService _verificationService;
         private readonly ILogger _logger;
         private readonly HttpClient _httpClient;
         private readonly ILoginService loginService;
-        public UserController(IUserService userService, IApplicationService applicationService, HttpClient httpClient, ILogger<UserController> logger, ILoginService loginService)
+        public UserController(IUserService userService, IApplicationService applicationService, IVerificationService verificationService, HttpClient httpClient, ILogger<UserController> logger, ILoginService loginService)
         {
             this.loginService = loginService;
             _userService = userService;
             _applicationService = applicationService;
+            _verificationService = verificationService;
             _httpClient = httpClient;
             _logger = logger;
             this.loginService = loginService;
+        }
+
+        private static object ToSafeUser(User user)
+        {
+            if (user == null) return null;
+            return new
+            {
+                user.Id,
+                user.Email,
+                user.FirstName,
+                user.LastName,
+                user.PhoneNumber,
+                user.UserName,
+                user.Status,
+                user.EmailConfirmed,
+                user.ApplicationId
+            };
         }
         [HttpPost("GoogleLogin")]
         public async Task<IActionResult> GoogleLogin([FromBody] GoogleLoginViewModel request)
@@ -223,6 +242,7 @@ namespace AuthMicroservice.Controller
 
                 // ✅ Check if user already exists
                 var userExist = await _userService.ExistedUserAsync(email, mobileNumber, app.Id);
+                bool isNewUser = false;
 
                 // ✅ Handle existing user
                 if (userExist != null)
@@ -233,7 +253,7 @@ namespace AuthMicroservice.Controller
                         return Ok(new
                         {
                             message = "Already existed such user",
-                            user = userExist
+                            user = ToSafeUser(userExist)
                         });
                     }
 
@@ -251,6 +271,13 @@ namespace AuthMicroservice.Controller
                 {
                     // ✅ Register new user
                     userExist = await _userService.RegisterUserAsync(app.Id, request);
+                    isNewUser = true;
+                }
+
+                // ✅ Send an email verification link for new/reactivated accounts
+                if (isNewUser && !string.IsNullOrWhiteSpace(userExist.Email))
+                {
+                    await _verificationService.GenerateAndSendAsync(app.Id, userExist.Email, "user");
                 }
 
                 // ✅ Get or register user role
@@ -271,7 +298,7 @@ namespace AuthMicroservice.Controller
                 return Ok(new
                 {
                     message = "User registered successfully",
-                    user = userExist,
+                    user = ToSafeUser(userExist),
                  //   role = null
                 });
             }

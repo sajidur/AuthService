@@ -991,7 +991,6 @@ C:\Users\sajidur\Project\AuthService\Auth\AuthMicroservice\obj\Debug\net8.0\stat
 C:\Users\sajidur\Project\AuthService\Auth\AuthMicroservice\obj\Debug\net8.0\staticwebassets.build.json.cache
 C:\Users\sajidur\Project\AuthService\Auth\AuthMicroservice\obj\Debug\net8.0\staticwebassets.development.json
 C:\Users\sajidur\Project\AuthService\Auth\AuthMicroservice\obj\Debug\net8.0\staticwebassets.build.endpoints.json
-C:\Users\sajidur\Project\AuthService\Auth\AuthMicroservice\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
 C:\Users\sajidur\Project\AuthService\Auth\AuthMicroservice\obj\Debug\net8.0\AuthMicr.C7A129F7.Up2Date
 C:\Users\sajidur\Project\AuthService\Auth\AuthMicroservice\obj\Debug\net8.0\AuthMicroservice.dll
 C:\Users\sajidur\Project\AuthService\Auth\AuthMicroservice\obj\Debug\net8.0\refint\AuthMicroservice.dll
@@ -1151,3 +1150,4 @@ C:\alamin\AuthService\Auth\AuthMicroservice\obj\Debug\net8.0\refint\AuthMicroser
 C:\alamin\AuthService\Auth\AuthMicroservice\obj\Debug\net8.0\AuthMicroservice.pdb
 C:\alamin\AuthService\Auth\AuthMicroservice\obj\Debug\net8.0\AuthMicroservice.genruntimeconfig.cache
 C:\alamin\AuthService\Auth\AuthMicroservice\obj\Debug\net8.0\ref\AuthMicroservice.dll
+C:\Users\sajidur\Project\AuthService\Auth\AuthMicroservice\obj\Debug\net8.0\swae.build.ex.cache

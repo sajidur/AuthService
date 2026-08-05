@@ -1,4 +1,5 @@
 using AuthMicroservice.Model;
+using AuthMicroservice.Repository;
 using AuthMicroservice.Service;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.Mail;
@@ -15,19 +16,31 @@ namespace AuthMicroservice.Controller
         private readonly ISmtpConfigService _smtpConfigService;
         private readonly IEmailService _emailService;
         private readonly ISubscriberService _subscriberService;
+        private readonly IContactRepository _contactRepository;
 
         public NewsletterController(
             IApplicationService applicationService,
             IUserService userService,
             ISmtpConfigService smtpConfigService,
             IEmailService emailService,
-            ISubscriberService subscriberService)
+            ISubscriberService subscriberService,
+            IContactRepository contactRepository)
         {
             _applicationService = applicationService;
             _userService = userService;
             _smtpConfigService = smtpConfigService;
             _emailService = emailService;
             _subscriberService = subscriberService;
+            _contactRepository = contactRepository;
+        }
+
+        private async Task<Dictionary<string, Contact>> GetContactsByEmailAsync(Guid applicationId)
+        {
+            var contacts = await _contactRepository.FindAsync(c => c.ApplicationId == applicationId);
+            return contacts
+                .Where(c => !string.IsNullOrWhiteSpace(c.Email))
+                .GroupBy(c => c.Email.Trim().ToLowerInvariant())
+                .ToDictionary(g => g.Key, g => g.First());
         }
 
         // SMTP Configuration Management
@@ -336,14 +349,29 @@ namespace AuthMicroservice.Controller
                 return Unauthorized(new { message = "Invalid AppKey or AppSecret" });
 
             var subscribers = await _subscriberService.GetSubscribersAsync(app.Id.ToString());
-            var recipientList = subscribers.Select(s => s.Email).ToList();
+            var contactsByEmail = await GetContactsByEmailAsync(app.Id);
+            var recipients = subscribers
+                .Where(s => !request.VerifiedOnly || s.IsVerified)
+                .Where(s => !string.IsNullOrWhiteSpace(s.Email))
+                .Select(s =>
+                {
+                    contactsByEmail.TryGetValue(s.Email.Trim().ToLowerInvariant(), out var contact);
+                    return new EmailRecipient
+                    {
+                        Email = s.Email,
+                        FirstName = contact?.FirstName,
+                        LastName = contact?.LastName,
+                        Company = contact?.Company
+                    };
+                })
+                .ToList();
 
-            if (recipientList.Count == 0)
+            if (recipients.Count == 0)
                 return Ok(new { message = "No subscribers to send to." });
 
-            await _emailService.SendEmailAsync(app.Id, request.Subject, request.Body, recipientList);
+            var result = await _emailService.SendPersonalizedEmailAsync(app.Id, request.Subject, request.Body, recipients);
 
-            return Ok(new { message = "Email sent successfully to subscribers." });
+            return Ok(new { message = $"Email sent individually to {result.SentCount}/{recipients.Count} subscribers.", result.SentCount, result.FailedCount, result.Status });
         }
 
         [HttpPost("send-by-group/{groupName}")]
@@ -354,14 +382,23 @@ namespace AuthMicroservice.Controller
                 return Unauthorized(new { message = "Invalid AppKey or AppSecret" });
 
             var users = await _userService.GetUsersByGroupAsync(groupName, app.Id);
-            var recipientList = users.Select(u => u.Email).ToList();
+            var recipients = users
+                .Where(u => !request.VerifiedOnly || u.EmailConfirmed)
+                .Where(u => !string.IsNullOrWhiteSpace(u.Email))
+                .Select(u => new EmailRecipient
+                {
+                    Email = u.Email,
+                    FirstName = u.FirstName,
+                    LastName = u.LastName
+                })
+                .ToList();
 
-            if (recipientList.Count == 0)
+            if (recipients.Count == 0)
                 return Ok(new { message = $"No users found in group '{groupName}'." });
 
-            await _emailService.SendEmailAsync(app.Id, request.Subject, request.Body, recipientList);
+            var result = await _emailService.SendPersonalizedEmailAsync(app.Id, request.Subject, request.Body, recipients);
 
-            return Ok(new { message = $"Email sent successfully to the '{groupName}' group." });
+            return Ok(new { message = $"Email sent individually to {result.SentCount}/{recipients.Count} users in the '{groupName}' group.", result.SentCount, result.FailedCount, result.Status });
         }
 
         // Email History
@@ -397,6 +434,7 @@ namespace AuthMicroservice.Controller
     {
         public string Subject { get; set; }
         public string Body { get; set; }
+        public bool VerifiedOnly { get; set; }
     }
 
     public class ContactWithAttachmentRequest

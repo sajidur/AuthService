@@ -1,5 +1,6 @@
 ﻿using AuthMicroservice.Model;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace AuthMicroservice.Repository
 {
@@ -24,6 +25,7 @@ namespace AuthMicroservice.Repository
         public DbSet<Subscriber> Subscribers { get; set; }
         public DbSet<EmailHistory> EmailHistories { get; set; }
         public DbSet<SmtpConfig> SmtpConfigs { get; set; }
+        public DbSet<Campaign> Campaigns { get; set; }
 
 
         //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -45,12 +47,34 @@ namespace AuthMicroservice.Repository
             }
         }
 
+        // MySQL's DATETIME columns carry no timezone. Pomelo materializes them with
+        // DateTimeKind.Unspecified, so System.Text.Json serializes them without a "Z"
+        // suffix — the frontend then misreads a true UTC instant as local time. These
+        // fields are always populated with DateTime.UtcNow (or a UTC-converted value
+        // from the client), so it's safe to stamp Kind=Utc on read. BaseEntity's
+        // CreatedDate/UpdatedBy use DateTime.Now (local) and are intentionally left alone.
+        private static readonly ValueConverter<DateTime, DateTime> UtcDateTimeConverter =
+            new ValueConverter<DateTime, DateTime>(
+                v => v,
+                v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
+
+        private static readonly ValueConverter<DateTime?, DateTime?> UtcNullableDateTimeConverter =
+            new ValueConverter<DateTime?, DateTime?>(
+                v => v,
+                v => v.HasValue ? DateTime.SpecifyKind(v.Value, DateTimeKind.Utc) : v);
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-            // Configure entity-specific settings here, if needed
-            // For example, configuring table names or relationships
+            modelBuilder.Entity<Campaign>().Property(c => c.ScheduledDate).HasConversion(UtcNullableDateTimeConverter);
+            modelBuilder.Entity<Campaign>().Property(c => c.SentDate).HasConversion(UtcNullableDateTimeConverter);
+            modelBuilder.Entity<EmailHistory>().Property(e => e.SentDate).HasConversion(UtcDateTimeConverter);
+            modelBuilder.Entity<Contact>().Property(c => c.VerifiedDate).HasConversion(UtcNullableDateTimeConverter);
+            modelBuilder.Entity<Contact>().Property(c => c.VerificationTokenExpiry).HasConversion(UtcNullableDateTimeConverter);
+            modelBuilder.Entity<Subscriber>().Property(s => s.VerifiedDate).HasConversion(UtcNullableDateTimeConverter);
+            modelBuilder.Entity<Subscriber>().Property(s => s.VerificationTokenExpiry).HasConversion(UtcNullableDateTimeConverter);
+            modelBuilder.Entity<User>().Property(u => u.EmailConfirmationTokenExpiry).HasConversion(UtcNullableDateTimeConverter);
         }
         public override int SaveChanges()
         {

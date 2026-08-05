@@ -2,7 +2,6 @@ using AuthMicroservice.Model;
 using AuthMicroservice.Service;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -10,19 +9,19 @@ namespace AuthMicroservice.Controller
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ContactController : ControllerBase
+    public class CampaignController : ControllerBase
     {
-        private readonly IContactService _contactService;
+        private readonly ICampaignService _campaignService;
         private readonly IApplicationService _applicationService;
 
-        public ContactController(IContactService contactService, IApplicationService applicationService)
+        public CampaignController(ICampaignService campaignService, IApplicationService applicationService)
         {
-            _contactService = contactService;
+            _campaignService = campaignService;
             _applicationService = applicationService;
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateContact([FromBody] Contact contact, [FromHeader(Name = "AppKey")] string appKey)
+        public async Task<IActionResult> CreateCampaign([FromBody] Campaign campaign, [FromHeader(Name = "AppKey")] string appKey)
         {
             var (isValid, app) = await IsValidAppKey(appKey);
             if (!isValid)
@@ -31,76 +30,86 @@ namespace AuthMicroservice.Controller
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var createdContact = await _contactService.CreateContactAsync(contact, app.Id);
-            return CreatedAtAction(nameof(GetContact), new { id = createdContact.Id }, createdContact);
+            var created = await _campaignService.CreateCampaignAsync(campaign, app.Id);
+            return CreatedAtAction(nameof(GetCampaign), new { id = created.Id }, created);
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetContacts([FromHeader(Name = "AppKey")] string appKey)
+        public async Task<IActionResult> GetCampaigns([FromHeader(Name = "AppKey")] string appKey)
         {
             var (isValid, app) = await IsValidAppKey(appKey);
             if (!isValid)
                 return Unauthorized(new { message = "Invalid AppKey or AppSecret" });
 
-            var contacts = await _contactService.GetContactsAsync(app.Id);
-            return Ok(contacts);
+            var campaigns = await _campaignService.GetCampaignsAsync(app.Id);
+            return Ok(campaigns);
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetContact(string id, [FromHeader(Name = "AppKey")] string appKey)
+        public async Task<IActionResult> GetCampaign(string id, [FromHeader(Name = "AppKey")] string appKey)
         {
             var (isValid, app) = await IsValidAppKey(appKey);
             if (!isValid)
                 return Unauthorized(new { message = "Invalid AppKey or AppSecret" });
 
-            var contact = await _contactService.GetContactByIdAsync(id, app.Id);
-            if (contact == null)
+            var campaign = await _campaignService.GetCampaignByIdAsync(id, app.Id);
+            if (campaign == null)
                 return NotFound();
 
-            return Ok(contact);
+            return Ok(campaign);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateContact(string id, [FromBody] Contact contact, [FromHeader(Name = "AppKey")] string appKey)
+        public async Task<IActionResult> UpdateCampaign(string id, [FromBody] Campaign campaign, [FromHeader(Name = "AppKey")] string appKey)
         {
             var (isValid, app) = await IsValidAppKey(appKey);
             if (!isValid)
                 return Unauthorized(new { message = "Invalid AppKey or AppSecret" });
 
-            if (id != contact.Id.ToString())
+            if (id != campaign.Id.ToString())
                 return BadRequest();
 
-            contact.ApplicationId = app.Id;
-            await _contactService.UpdateContactAsync(id, contact, app.Id);
+            await _campaignService.UpdateCampaignAsync(id, campaign, app.Id);
             return NoContent();
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteContact(string id, [FromHeader(Name = "AppKey")] string appKey)
+        public async Task<IActionResult> DeleteCampaign(string id, [FromHeader(Name = "AppKey")] string appKey)
         {
             var (isValid, app) = await IsValidAppKey(appKey);
             if (!isValid)
                 return Unauthorized(new { message = "Invalid AppKey or AppSecret" });
 
-            await _contactService.DeleteContactAsync(id, app.Id);
+            await _campaignService.DeleteCampaignAsync(id, app.Id);
             return NoContent();
         }
 
-        [HttpPost("bulk-import")]
-        public async Task<IActionResult> BulkImportContacts([FromBody] List<Contact> contacts, [FromHeader(Name = "AppKey")] string appKey)
+        [HttpPost("{id}/send")]
+        public async Task<IActionResult> SendCampaign(string id, [FromHeader(Name = "AppKey")] string appKey)
         {
             var (isValid, app) = await IsValidAppKey(appKey);
             if (!isValid)
                 return Unauthorized(new { message = "Invalid AppKey or AppSecret" });
 
-            if (contacts == null || contacts.Count == 0)
-                return BadRequest(new { message = "No contacts provided." });
+            var campaign = await _campaignService.SendCampaignAsync(id, app.Id);
+            if (campaign == null)
+                return NotFound();
 
-            if (contacts.Count > 2000)
-                return BadRequest(new { message = "Batch too large; import in chunks of 2000 or fewer." });
+            return Ok(campaign);
+        }
 
-            var result = await _contactService.BulkImportContactsAsync(contacts, app.Id);
-            return Ok(result);
+        [HttpPost("{id}/cancel-schedule")]
+        public async Task<IActionResult> CancelSchedule(string id, [FromHeader(Name = "AppKey")] string appKey)
+        {
+            var (isValid, app) = await IsValidAppKey(appKey);
+            if (!isValid)
+                return Unauthorized(new { message = "Invalid AppKey or AppSecret" });
+
+            var campaign = await _campaignService.CancelScheduleAsync(id, app.Id);
+            if (campaign == null)
+                return NotFound();
+
+            return Ok(campaign);
         }
 
         private async Task<(bool, Application)> IsValidAppKey(string appKey)

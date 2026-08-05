@@ -3,16 +3,33 @@ using AuthMicroservice.Repository;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Mail;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System;
 using System.Linq;
 
 namespace AuthMicroservice.Service
 {
+    public class EmailRecipient
+    {
+        public string Email { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string Company { get; set; }
+    }
+
+    public class PersonalizedSendResult
+    {
+        public int SentCount { get; set; }
+        public int FailedCount { get; set; }
+        public string Status { get; set; }
+    }
+
     public interface IEmailService
     {
-        Task SendEmailAsync(Guid applicationId, string subject, string body, List<string> to);
-        Task SendEmailAsync(Guid applicationId, string subject, string body, List<string> to, List<Attachment> attachments);
+        Task<string> SendEmailAsync(Guid applicationId, string subject, string body, List<string> to);
+        Task<string> SendEmailAsync(Guid applicationId, string subject, string body, List<string> to, List<Attachment> attachments);
+        Task<PersonalizedSendResult> SendPersonalizedEmailAsync(Guid applicationId, string subjectTemplate, string bodyTemplate, List<EmailRecipient> recipients, Dictionary<string, string> globalVariables = null);
         Task<IEnumerable<EmailHistory>> GetEmailHistoryAsync(Guid applicationId);
     }
 
@@ -27,12 +44,12 @@ namespace AuthMicroservice.Service
             _emailHistoryRepository = emailHistoryRepository;
         }
 
-        public async Task SendEmailAsync(Guid applicationId, string subject, string body, List<string> to)
+        public async Task<string> SendEmailAsync(Guid applicationId, string subject, string body, List<string> to)
         {
-            await SendEmailAsync(applicationId, subject, body, to, null);
+            return await SendEmailAsync(applicationId, subject, body, to, null);
         }
 
-        public async Task SendEmailAsync(Guid applicationId, string subject, string body, List<string> to, List<Attachment> attachments)
+        public async Task<string> SendEmailAsync(Guid applicationId, string subject, string body, List<string> to, List<Attachment> attachments)
         {
             var smtpConfig = await _smtpConfigService.GetSmtpConfigByApplicationIdAsync(applicationId);
             if (smtpConfig == null)
@@ -89,6 +106,91 @@ namespace AuthMicroservice.Service
             };
 
             await _emailHistoryRepository.AddAsync(emailHistory);
+
+            return status;
+        }
+
+        public async Task<PersonalizedSendResult> SendPersonalizedEmailAsync(Guid applicationId, string subjectTemplate, string bodyTemplate, List<EmailRecipient> recipients, Dictionary<string, string> globalVariables = null)
+        {
+            var smtpConfig = await _smtpConfigService.GetSmtpConfigByApplicationIdAsync(applicationId);
+            if (smtpConfig == null)
+                throw new Exception("SMTP configuration not found for this application.");
+
+            int sentCount = 0;
+            int failedCount = 0;
+
+            using (var client = new SmtpClient(smtpConfig.Host, smtpConfig.Port))
+            {
+                client.UseDefaultCredentials = false;
+                client.DeliveryMethod = SmtpDeliveryMethod.Network;
+                client.Timeout = 10000;
+                client.Credentials = new NetworkCredential(smtpConfig.Username, smtpConfig.Password);
+                client.EnableSsl = smtpConfig.EnableSsl;
+
+                foreach (var recipient in recipients)
+                {
+                    if (string.IsNullOrWhiteSpace(recipient?.Email))
+                        continue;
+
+                    var variables = new Dictionary<string, string>(globalVariables ?? new Dictionary<string, string>(), StringComparer.OrdinalIgnoreCase)
+                    {
+                        ["firstName"] = recipient.FirstName ?? "",
+                        ["lastName"] = recipient.LastName ?? "",
+                        ["company"] = recipient.Company ?? "",
+                        ["email"] = recipient.Email ?? "",
+                    };
+                    if (!variables.ContainsKey("date"))
+                        variables["date"] = DateTime.Now.ToString("MMMM d, yyyy");
+
+                    try
+                    {
+                        using var mailMessage = new MailMessage
+                        {
+                            From = new MailAddress(smtpConfig.FromAddress, smtpConfig.FromName),
+                            Subject = ApplyVariables(subjectTemplate, variables),
+                            Body = ApplyVariables(bodyTemplate, variables),
+                            IsBodyHtml = true,
+                        };
+                        mailMessage.To.Add(recipient.Email);
+
+                        await client.SendMailAsync(mailMessage);
+                        sentCount++;
+                    }
+                    catch
+                    {
+                        failedCount++;
+                    }
+                }
+            }
+
+            var status = failedCount == 0
+                ? "Sent"
+                : sentCount == 0
+                    ? "Failed"
+                    : $"Partially sent ({sentCount}/{sentCount + failedCount})";
+
+            var emailHistory = new EmailHistory
+            {
+                Subject = subjectTemplate,
+                Body = bodyTemplate,
+                Recipients = string.Join(",", recipients.Where(r => !string.IsNullOrWhiteSpace(r?.Email)).Select(r => r.Email)),
+                SentDate = DateTime.UtcNow,
+                Status = status,
+                ApplicationId = applicationId
+            };
+
+            await _emailHistoryRepository.AddAsync(emailHistory);
+
+            return new PersonalizedSendResult { SentCount = sentCount, FailedCount = failedCount, Status = status };
+        }
+
+        private static string ApplyVariables(string template, Dictionary<string, string> variables)
+        {
+            if (string.IsNullOrEmpty(template))
+                return template;
+
+            return Regex.Replace(template, @"\{\{\s*(\w+)\s*\}\}", match =>
+                variables.TryGetValue(match.Groups[1].Value, out var value) ? value : match.Value);
         }
 
         public async Task<IEnumerable<EmailHistory>> GetEmailHistoryAsync(Guid applicationId)

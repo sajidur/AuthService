@@ -4,6 +4,7 @@ using AuthMicroservice.Repository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AuthMicroservice.Migrations
 {
     [DbContext(typeof(UserDbContext))]
-    partial class UserDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260805083743_AddContactStatus")]
+    partial class AddContactStatus
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -72,7 +75,7 @@ namespace AuthMicroservice.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Applications", (string)null);
+                    b.ToTable("Applications");
                 });
 
             modelBuilder.Entity("AuthMicroservice.Model.Campaign", b =>
@@ -145,7 +148,7 @@ namespace AuthMicroservice.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Campaigns", (string)null);
+                    b.ToTable("Campaigns");
                 });
 
             modelBuilder.Entity("AuthMicroservice.Model.Contact", b =>
@@ -262,7 +265,7 @@ namespace AuthMicroservice.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Contacts", (string)null);
+                    b.ToTable("Contacts");
                 });
 
             modelBuilder.Entity("AuthMicroservice.Model.EmailHistory", b =>
@@ -316,7 +319,7 @@ namespace AuthMicroservice.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("EmailHistories", (string)null);
+                    b.ToTable("EmailHistories");
                 });
 
             modelBuilder.Entity("AuthMicroservice.Model.SmtpConfig", b =>
@@ -377,7 +380,7 @@ namespace AuthMicroservice.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("SmtpConfigs", (string)null);
+                    b.ToTable("SmtpConfigs");
                 });
 
             modelBuilder.Entity("AuthMicroservice.Model.Subscriber", b =>
@@ -432,7 +435,7 @@ namespace AuthMicroservice.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Subscribers", (string)null);
+                    b.ToTable("Subscribers");
                 });
 
             modelBuilder.Entity("AuthMicroservice.Model.User", b =>
@@ -526,7 +529,7 @@ namespace AuthMicroservice.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users", (string)null);
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("AuthMicroservice.Model.UserRole", b =>
@@ -571,7 +574,7 @@ namespace AuthMicroservice.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("userRoles", (string)null);
+                    b.ToTable("userRoles");
                 });
 #pragma warning restore 612, 618
         }

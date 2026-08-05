@@ -17,6 +17,7 @@ namespace AuthMicroservice
             services.AddScoped<IEmailHistoryRepository, EmailHistoryRepository>();
             services.AddScoped<ISubscriberRepository, SubscriberRepository>();
             services.AddScoped<IContactRepository, ContactRepository>();
+            services.AddScoped<ICampaignRepository, CampaignRepository>();
 
             // Add service registrations here
             //services.AddScoped<HttpClient, HttpClient>();
@@ -27,6 +28,8 @@ namespace AuthMicroservice
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<ISubscriberService, SubscriberService>();
             services.AddScoped<IContactService, ContactService>();
+            services.AddScoped<ICampaignService, CampaignService>();
+            services.AddScoped<IVerificationService, VerificationService>();
             services.AddHttpClient();
 
             services.AddMemoryCache();

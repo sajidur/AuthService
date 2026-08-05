@@ -15,6 +15,7 @@ namespace AuthMicroservice.Model
         public string? Source { get; set; }
         public string? Notes { get; set; }
         public Guid ApplicationId { get; set; }
+        public string? Status { get; set; }
         public string? Category { get; set; }
         public string? Grade { get; set; }
         public string? Industry { get; set; }
@@ -27,5 +28,9 @@ namespace AuthMicroservice.Model
         public int? EngagementScore { get; set; }
         public DateTime? LastInteractionDate { get; set; }
         public string? PreferredLanguage { get; set; }
+        public bool IsVerified { get; set; }
+        public DateTime? VerifiedDate { get; set; }
+        public string? VerificationToken { get; set; }
+        public DateTime? VerificationTokenExpiry { get; set; }
     }
 }
