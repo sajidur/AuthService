@@ -1,15 +1,19 @@
 using AuthMicroservice.Model;
 using AuthMicroservice.Service;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace AuthMicroservice.Controller
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class ContactController : ControllerBase
     {
         private readonly IContactService _contactService;
@@ -17,19 +21,40 @@ namespace AuthMicroservice.Controller
         private readonly IContactActivityService _contactActivityService;
         private readonly IEmailService _emailService;
         private readonly ISmsService _smsService;
+        private readonly IFacebookService _facebookService;
+        private readonly IWhatsappService _whatsappService;
+        private readonly IFacebookConfigService _facebookConfigService;
+        private readonly IWhatsappConfigService _whatsappConfigService;
+        private readonly IHttpClientFactory _httpClientFactory;
+        private readonly IContactExtractionService _contactExtractionService;
+        private readonly IWebCrawlerService _webCrawlerService;
 
         public ContactController(
             IContactService contactService,
             IApplicationService applicationService,
             IContactActivityService contactActivityService,
             IEmailService emailService,
-            ISmsService smsService)
+            ISmsService smsService,
+            IFacebookService facebookService,
+            IWhatsappService whatsappService,
+            IFacebookConfigService facebookConfigService,
+            IWhatsappConfigService whatsappConfigService,
+            IHttpClientFactory httpClientFactory,
+            IContactExtractionService contactExtractionService,
+            IWebCrawlerService webCrawlerService)
         {
             _contactService = contactService;
             _applicationService = applicationService;
             _contactActivityService = contactActivityService;
             _emailService = emailService;
             _smsService = smsService;
+            _facebookService = facebookService;
+            _whatsappService = whatsappService;
+            _facebookConfigService = facebookConfigService;
+            _whatsappConfigService = whatsappConfigService;
+            _httpClientFactory = httpClientFactory;
+            _contactExtractionService = contactExtractionService;
+            _webCrawlerService = webCrawlerService;
         }
 
         [HttpPost]
@@ -155,6 +180,66 @@ namespace AuthMicroservice.Controller
             return Ok(new { status });
         }
 
+        [HttpPost("{id}/send-facebook-message")]
+        public async Task<IActionResult> SendContactFacebookMessage(string id, [FromBody] ContactFacebookMessageRequest request, [FromHeader(Name = "AppKey")] string appKey)
+        {
+            var (isValid, app) = await IsValidAppKey(appKey);
+            if (!isValid)
+                return Unauthorized(new { message = "Invalid AppKey or AppSecret" });
+
+            if (!Guid.TryParse(id, out var contactId))
+                return BadRequest(new { message = "Invalid contact id." });
+
+            var contact = await _contactService.GetContactByIdAsync(id, app.Id);
+            if (contact == null)
+                return NotFound();
+
+            if (string.IsNullOrWhiteSpace(contact.FacebookPsid))
+                return BadRequest(new { message = "This contact has no linked Facebook Messenger conversation on file." });
+
+            if (string.IsNullOrWhiteSpace(request?.Message))
+                return BadRequest(new { message = "Message is required." });
+
+            var config = await _facebookConfigService.GetFacebookConfigByApplicationIdAsync(app.Id);
+            if (config == null || string.IsNullOrWhiteSpace(config.PageAccessToken))
+                return BadRequest(new { message = "No Facebook Page is connected for this application." });
+
+            var sent = await _facebookService.SendMessageAsync(config.PageAccessToken, contact.FacebookPsid, request.Message);
+            var status = sent ? "Sent" : "Failed";
+            await _contactActivityService.LogActivityForContactAsync(app.Id, contactId, "facebook-message", "Facebook Message", request.Message, status);
+            return Ok(new { status });
+        }
+
+        [HttpPost("{id}/send-whatsapp")]
+        public async Task<IActionResult> SendContactWhatsapp(string id, [FromBody] ContactWhatsappRequest request, [FromHeader(Name = "AppKey")] string appKey)
+        {
+            var (isValid, app) = await IsValidAppKey(appKey);
+            if (!isValid)
+                return Unauthorized(new { message = "Invalid AppKey or AppSecret" });
+
+            if (!Guid.TryParse(id, out var contactId))
+                return BadRequest(new { message = "Invalid contact id." });
+
+            var contact = await _contactService.GetContactByIdAsync(id, app.Id);
+            if (contact == null)
+                return NotFound();
+
+            if (string.IsNullOrWhiteSpace(contact.Phone))
+                return BadRequest(new { message = "Contact has no phone number on file." });
+
+            if (string.IsNullOrWhiteSpace(request?.Message))
+                return BadRequest(new { message = "Message is required." });
+
+            var config = await _whatsappConfigService.GetWhatsappConfigByApplicationIdAsync(app.Id);
+            if (config == null || string.IsNullOrWhiteSpace(config.AccessToken))
+                return BadRequest(new { message = "No WhatsApp Business number is connected for this application." });
+
+            var sent = await _whatsappService.SendMessageAsync(config.AccessToken, config.PhoneNumberId, contact.Phone, request.Message, request.TemplateName, request.TemplateParams);
+            var status = sent ? "Sent" : "Failed";
+            await _contactActivityService.LogActivityForContactAsync(app.Id, contactId, "whatsapp-message", "WhatsApp Message", request.Message, status);
+            return Ok(new { status });
+        }
+
         [HttpPost("{id}/log-activity")]
         public async Task<IActionResult> LogContactActivity(string id, [FromBody] ContactLogActivityRequest request, [FromHeader(Name = "AppKey")] string appKey)
         {
@@ -171,6 +256,124 @@ namespace AuthMicroservice.Controller
             var type = string.IsNullOrWhiteSpace(request.Type) ? "Note" : request.Type;
             await _contactActivityService.LogActivityForContactAsync(app.Id, contactId, type, request.Subject ?? type, request.Message, "Logged");
             return Ok();
+        }
+
+        // Resolves a Google Sheets or Google Drive file share link to its raw file bytes,
+        // so the browser never needs to fetch docs.google.com/drive.google.com directly
+        // (blocked by CORS for cross-origin script fetches anyway). Only these two host+
+        // path shapes are accepted — this is a URL-fetching proxy, so anything broader
+        // would be an SSRF hole. The frontend sniffs the returned bytes itself (JSON vs.
+        // CSV/XLSX) since Drive's direct-download endpoint doesn't reliably report a
+        // useful Content-Type.
+        [HttpPost("import-from-url")]
+        public async Task<IActionResult> ImportFromUrl([FromBody] ImportFromUrlRequest request, [FromHeader(Name = "AppKey")] string appKey)
+        {
+            var (isValid, app) = await IsValidAppKey(appKey);
+            if (!isValid)
+                return Unauthorized(new { message = "Invalid AppKey or AppSecret" });
+
+            if (string.IsNullOrWhiteSpace(request?.Url) || !Uri.TryCreate(request.Url, UriKind.Absolute, out var uri))
+                return BadRequest(new { message = "A valid URL is required." });
+
+            string fetchUrl;
+            if (string.Equals(uri.Host, "docs.google.com", StringComparison.OrdinalIgnoreCase) &&
+                uri.AbsolutePath.StartsWith("/spreadsheets/d/", StringComparison.OrdinalIgnoreCase))
+            {
+                var sheetMatch = Regex.Match(uri.AbsolutePath, @"/spreadsheets/d/([a-zA-Z0-9_-]+)");
+                if (!sheetMatch.Success)
+                    return BadRequest(new { message = "Could not find a sheet ID in that URL." });
+
+                var gidMatch = Regex.Match(request.Url, @"[?&#]gid=(\d+)");
+                var gid = gidMatch.Success ? gidMatch.Groups[1].Value : "0";
+                fetchUrl = $"https://docs.google.com/spreadsheets/d/{sheetMatch.Groups[1].Value}/export?format=csv&gid={gid}";
+            }
+            else if (string.Equals(uri.Host, "drive.google.com", StringComparison.OrdinalIgnoreCase) &&
+                     uri.AbsolutePath.StartsWith("/file/d/", StringComparison.OrdinalIgnoreCase))
+            {
+                var fileMatch = Regex.Match(uri.AbsolutePath, @"/file/d/([a-zA-Z0-9_-]+)");
+                if (!fileMatch.Success)
+                    return BadRequest(new { message = "Could not find a file ID in that URL." });
+
+                fetchUrl = $"https://drive.google.com/uc?export=download&id={fileMatch.Groups[1].Value}";
+            }
+            else
+            {
+                return BadRequest(new { message = "Only Google Sheets or Google Drive file links are supported right now." });
+            }
+
+            var client = _httpClientFactory.CreateClient();
+            HttpResponseMessage response;
+            try
+            {
+                response = await client.GetAsync(fetchUrl);
+            }
+            catch
+            {
+                return BadRequest(new { message = "Could not reach that Google URL." });
+            }
+
+            if (!response.IsSuccessStatusCode)
+                return BadRequest(new { message = "Could not fetch that file. Make sure it's shared as \"Anyone with the link can view\"." });
+
+            var bytes = await response.Content.ReadAsByteArrayAsync();
+            // Drive files over ~25MB return an HTML virus-scan warning page instead of the
+            // file itself; not handled here (would need scraping a confirm token from
+            // that page) — surface it as a clear error rather than silently mis-importing it.
+            var contentType = response.Content.Headers.ContentType?.MediaType ?? "";
+            if (contentType.Contains("html", StringComparison.OrdinalIgnoreCase))
+                return BadRequest(new { message = "That link returned a web page instead of a file — check sharing permissions, or the file may be too large for a direct link." });
+
+            return File(bytes, "application/octet-stream");
+        }
+
+        // Crawls a tenant-supplied URL (plus a few same-domain "contact us"/"about"/"team"
+        // pages it links to) and runs the page text through ContactExtractionService's
+        // ML.NET classifier to pull out candidate contacts. Returns structured records
+        // rather than raw bytes — unlike import-from-url — since the frontend can feed
+        // them straight into ImportContactsModal's existing mapping step. This does not
+        // create/update any contacts itself; bulk-import still does that after the user
+        // reviews the mapping.
+        [HttpPost("crawl-and-extract")]
+        public async Task<IActionResult> CrawlAndExtractContacts([FromBody] CrawlAndExtractRequest request, [FromHeader(Name = "AppKey")] string appKey)
+        {
+            var (isValid, app) = await IsValidAppKey(appKey);
+            if (!isValid)
+                return Unauthorized(new { message = "Invalid AppKey or AppSecret" });
+
+            var url = request?.Url?.Trim();
+            if (string.IsNullOrWhiteSpace(url))
+                return BadRequest(new { message = "A URL is required." });
+
+            var (success, error, pages) = await _webCrawlerService.CrawlAsync(url, request.MaxPages ?? 5);
+            if (!success)
+                return BadRequest(new { message = error ?? "Could not crawl that URL." });
+
+            var combinedText = string.Join("\n\n", pages.Select(p => $"[{p.Url}]\n{p.Text}"));
+            var extracted = _contactExtractionService.ExtractContacts(combinedText);
+
+            var contacts = extracted
+                .Where(c => !string.IsNullOrWhiteSpace(c.Email))
+                .GroupBy(c => c.Email.Trim().ToLowerInvariant())
+                .Select(g => g.First())
+                .Take(500)
+                .Select(c => new
+                {
+                    email = c.Email,
+                    firstName = c.FirstName,
+                    lastName = c.LastName,
+                    phone = c.Phone,
+                    company = c.Company,
+                    jobTitle = c.JobTitle,
+                    notes = c.Notes,
+                    source = $"Web crawl: {url}",
+                })
+                .ToList();
+
+            return Ok(new
+            {
+                pagesCrawled = pages.Select(p => p.Url).ToList(),
+                contacts,
+            });
         }
 
         [HttpPost("bulk-import")]
@@ -196,9 +399,25 @@ namespace AuthMicroservice.Controller
             var app = applications.FirstOrDefault(a => a.AppKey == appKey);
             if (app == null) return (false, null);
 
-            var isValid = await _applicationService.ValidateAppKeyAndSecretAsync(appKey, app.AppSecret);
+            // [Authorize] has already validated the JWT itself; this confirms the token's
+            // own tenant (ApplicationId claim) matches the AppKey-resolved tenant for this
+            // request, so a valid token for tenant A can't be replayed against tenant B's
+            // AppKey.
+            var applicationIdClaim = User.FindFirst("ApplicationId")?.Value;
+            var isValid = !string.IsNullOrEmpty(applicationIdClaim) && applicationIdClaim == app.Id.ToString();
             return (isValid, app);
         }
+    }
+
+    public class ImportFromUrlRequest
+    {
+        public string Url { get; set; }
+    }
+
+    public class CrawlAndExtractRequest
+    {
+        public string Url { get; set; }
+        public int? MaxPages { get; set; }
     }
 
     public class ContactEmailRequest
@@ -210,6 +429,18 @@ namespace AuthMicroservice.Controller
     public class ContactSmsRequest
     {
         public string Message { get; set; }
+    }
+
+    public class ContactFacebookMessageRequest
+    {
+        public string Message { get; set; }
+    }
+
+    public class ContactWhatsappRequest
+    {
+        public string Message { get; set; }
+        public string TemplateName { get; set; }
+        public string[] TemplateParams { get; set; }
     }
 
     public class ContactLogActivityRequest

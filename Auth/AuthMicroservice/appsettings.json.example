@@ -1,0 +1,23 @@
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+  "AllowedHosts": "*",
+  "ConnectionStrings": {
+    "DefaultConnection": "Server=__DB_HOST__;Database=__DB_NAME__;User=__DB_USER__;Password=__DB_PASSWORD__;"
+  },
+  "Frontend": {
+    "BaseUrl": "http://localhost:5173"
+  },
+  "Cors": {
+    "AllowedOrigins": [ "http://localhost:5173" ]
+  },
+  "Sms": {
+    "ApiKey": "__SMS_API_KEY__",
+    "SenderId": "__SMS_SENDER_ID__",
+    "AppHashKey": "__SMS_APP_HASH_KEY__"
+  }
+}

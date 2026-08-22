@@ -56,7 +56,7 @@ namespace AuthMicroservice.Controller
             //If any userRole exist?
            
              var  userRole = await _loginService.GetUserRoleAsync(user.Email, user.PhoneNumber, app.Id);
-            var tokenString = _userService.GetToken(user, app.AppSecret, model.Username);
+            var tokenString = _userService.GetToken(user, app, model.Username);
 
             if (userRole!=null)
             {

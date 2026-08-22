@@ -44,5 +44,11 @@ namespace AuthMicroservice.Model
         public DateTime? NextContactDate { get; set; }
         public DateTime? LastEmailDate { get; set; }
         public DateTime? LastSmsDate { get; set; }
+        public DateTime? LastFacebookMessageDate { get; set; }
+        public DateTime? LastWhatsappDate { get; set; }
+        // Facebook Messenger page-scoped user id. Only obtainable once this contact has
+        // messaged the connected Page (Meta's Send API cannot target arbitrary users);
+        // populated by a webhook receiver on first inbound message, not by this API.
+        public string? FacebookPsid { get; set; }
     }
 }

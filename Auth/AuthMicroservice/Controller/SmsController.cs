@@ -55,7 +55,7 @@ namespace AuthMicroservice.Controller
                 {
                     return Ok(new { message = "Please register the application first" });
                 }
-                token = _userService.GetToken(userExist, app.AppSecret, request.PhoneNumber);
+                token = _userService.GetToken(userExist, app, request.PhoneNumber);
 
             }
             //If any userRole exist?

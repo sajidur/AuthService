@@ -42,14 +42,18 @@ namespace AuthMicroservice.Service
         }
         public async Task<Application> RegisterApplicationAsync(ApplicationRequest app)
         {
+            var appKey = Guid.NewGuid().ToString();
             var application = new Application
             {
                 Id = Guid.NewGuid(),
                 Name = app.Name,
                 ContactEmail=app.ContactEmail,
                 RedirectUri=app.RedirectUri,
-                AppKey = Guid.NewGuid().ToString(),
+                AppKey = appKey,
                 AppSecret = Guid.NewGuid().ToString(),
+                // Per-app JWT aud/iss claims; AppKey is already a unique per-tenant value.
+                Audience = appKey,
+                Issuer = appKey,
                 Description = "Default description" // Provide a value for the Description column
             };
 

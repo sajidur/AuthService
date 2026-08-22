@@ -7,10 +7,12 @@ namespace AuthMicroservice.Model
         public string Name { get; set; }
         public string Subject { get; set; }
         public string Body { get; set; } = string.Empty;
+        public string Channel { get; set; } = "email";
         public string Status { get; set; } = "draft";
         public string TargetGroup { get; set; } = "all";
         public bool VerifiedOnly { get; set; }
         public DateTime? ScheduledDate { get; set; }
+        public string? RecurrenceInterval { get; set; } // null | "daily" | "weekly" | "monthly"
         public DateTime? SentDate { get; set; }
         public Guid ApplicationId { get; set; }
         public int TotalRecipients { get; set; }

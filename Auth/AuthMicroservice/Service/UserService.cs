@@ -22,7 +22,7 @@ namespace AuthMicroservice.Service
         Task<User> AuthenticateUserAsync(Guid applicationId, string email, string password);
         Task<bool> ResetPasswordAsync(Guid applicationId, string email, string newPassword);
         Task<User> ExistedUserAsync(string email,string mobileNumber,Guid appId);
-        string GetToken(User user, string AppSecret, string Username);
+        string GetToken(User user, Application application, string Username);
         Task<User> FindOrCreateUserAsync(string email, string mobile, string username, Guid appId);
         Task<User> FindOrCreateUserForLoginWithGoogleAsync(Guid appId, string userRole, string firstname, string lastname,string fullname, string email);
         Task<User> FindOrCreateUserForFacebookAsync(string email,string username, Guid appId);
@@ -234,11 +234,9 @@ namespace AuthMicroservice.Service
 
             return false;
         }
-        public string GetToken(User user,string AppSecret,string Username)
+        public string GetToken(User user, Application application, string Username)
         {
-
-
-            var key = Encoding.ASCII.GetBytes(AppSecret);
+            var key = Encoding.ASCII.GetBytes(application.AppSecret);
             var tokenHandler = new JwtSecurityTokenHandler();
             var tokenDescriptor = new SecurityTokenDescriptor
             {
@@ -248,8 +246,9 @@ namespace AuthMicroservice.Service
                 }),
                 Claims = new Dictionary<string, object>(),
                 Expires = DateTime.UtcNow.AddHours(96),
-                Audience = "your-audience-here",  // Set your audience here
-                Issuer = "your-issuer-here",  // Set your issuer here
+                // Each app has its own Audience/Issuer, same as its own signing key (AppSecret).
+                Audience = application.Audience,
+                Issuer = application.Issuer,
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
 

@@ -25,6 +25,8 @@ namespace AuthMicroservice.Repository
         public DbSet<Subscriber> Subscribers { get; set; }
         public DbSet<EmailHistory> EmailHistories { get; set; }
         public DbSet<SmtpConfig> SmtpConfigs { get; set; }
+        public DbSet<FacebookConfig> FacebookConfigs { get; set; }
+        public DbSet<WhatsappConfig> WhatsappConfigs { get; set; }
         public DbSet<Campaign> Campaigns { get; set; }
         public DbSet<ContactActivity> ContactActivities { get; set; }
 
@@ -68,6 +70,7 @@ namespace AuthMicroservice.Repository
         {
             base.OnModelCreating(modelBuilder);
 
+            modelBuilder.Entity<Campaign>().Property(c => c.Channel).HasDefaultValue("email");
             modelBuilder.Entity<Campaign>().Property(c => c.ScheduledDate).HasConversion(UtcNullableDateTimeConverter);
             modelBuilder.Entity<Campaign>().Property(c => c.SentDate).HasConversion(UtcNullableDateTimeConverter);
             modelBuilder.Entity<EmailHistory>().Property(e => e.SentDate).HasConversion(UtcDateTimeConverter);
@@ -76,6 +79,8 @@ namespace AuthMicroservice.Repository
             modelBuilder.Entity<Contact>().Property(c => c.NextContactDate).HasConversion(UtcNullableDateTimeConverter);
             modelBuilder.Entity<Contact>().Property(c => c.LastEmailDate).HasConversion(UtcNullableDateTimeConverter);
             modelBuilder.Entity<Contact>().Property(c => c.LastSmsDate).HasConversion(UtcNullableDateTimeConverter);
+            modelBuilder.Entity<Contact>().Property(c => c.LastFacebookMessageDate).HasConversion(UtcNullableDateTimeConverter);
+            modelBuilder.Entity<Contact>().Property(c => c.LastWhatsappDate).HasConversion(UtcNullableDateTimeConverter);
             modelBuilder.Entity<Subscriber>().Property(s => s.VerifiedDate).HasConversion(UtcNullableDateTimeConverter);
             modelBuilder.Entity<Subscriber>().Property(s => s.VerificationTokenExpiry).HasConversion(UtcNullableDateTimeConverter);
             modelBuilder.Entity<User>().Property(u => u.EmailConfirmationTokenExpiry).HasConversion(UtcNullableDateTimeConverter);

@@ -59,6 +59,11 @@ logs/
 *.temp
 *.tmp
 
+# Secrets — real config lives in user-secrets / deployment env vars, not git
+Auth/AuthMicroservice/appsettings.json
+Auth/AuthMicroservice/appsettings.*.json
+!Auth/AuthMicroservice/appsettings.json.example
+
 # Windows and MacOS specific files
 Thumbs.db
 ehthumbs.db

@@ -68,6 +68,8 @@ namespace AuthMicroservice.Service
                 var normalizedType = type?.ToLowerInvariant();
                 if (normalizedType == "email") contact.LastEmailDate = now;
                 else if (normalizedType == "sms") contact.LastSmsDate = now;
+                else if (normalizedType == "facebook-message") contact.LastFacebookMessageDate = now;
+                else if (normalizedType == "whatsapp-message") contact.LastWhatsappDate = now;
             }
             await _contactRepository.UpdateAsync(contact);
         }

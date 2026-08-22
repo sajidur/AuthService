@@ -116,7 +116,7 @@ namespace AuthMicroservice.Controller
                     user.ApplicationId,
                     ApplicationName = application.Name,
                     firebasetoken = request.firebase_token,
-                    token = _userService.GetToken(user, application.AppSecret, request.email) // Assuming you have a GetToken method to generate JWT token
+                    token = _userService.GetToken(user, application, request.email) // Assuming you have a GetToken method to generate JWT token
                 });
             }
 
@@ -193,7 +193,7 @@ namespace AuthMicroservice.Controller
                     user.ApplicationId,
                     ApplicationName = application.Name,
                     FacebookToken = request.FacebookToken,
-                    token = _userService.GetToken(user, application.AppSecret, request.UserName) // Assuming you have a GetToken method to generate JWT token
+                    token = _userService.GetToken(user, application, request.UserName) // Assuming you have a GetToken method to generate JWT token
                 });
             }
 
@@ -486,7 +486,7 @@ namespace AuthMicroservice.Controller
                 }
 
                 // Generate token
-                var tokenString = _userService.GetToken(user, app.AppSecret, email);
+                var tokenString = _userService.GetToken(user, app, email);
 
                 return Ok(new
                 {

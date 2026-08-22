@@ -1,5 +1,6 @@
 using AuthMicroservice.Model;
 using AuthMicroservice.Service;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Linq;
@@ -20,6 +21,9 @@ namespace AuthMicroservice.Controller
             _verificationService = verificationService;
         }
 
+        // Triggered from the logged-in admin UI (resend/bulk-resend verification), not by
+        // the public — requires a valid session.
+        [Authorize]
         [HttpPost("send")]
         public async Task<IActionResult> Send([FromBody] SendVerificationRequest request, [FromHeader(Name = "AppKey")] string appKey)
         {
@@ -37,6 +41,7 @@ namespace AuthMicroservice.Controller
             return Ok(new { message = "Verification email sent." });
         }
 
+        [Authorize]
         [HttpPost("send-bulk")]
         public async Task<IActionResult> SendBulk([FromBody] SendBulkVerificationRequest request, [FromHeader(Name = "AppKey")] string appKey)
         {
@@ -51,6 +56,9 @@ namespace AuthMicroservice.Controller
             return Ok(new { message = $"Verification emails sent to {count} recipients.", count });
         }
 
+        // Hit anonymously from the verification link in an email — the requester has no
+        // session at this point, only the one-time token in the request body.
+        [AllowAnonymous]
         [HttpPost("confirm")]
         public async Task<IActionResult> Confirm([FromBody] ConfirmVerificationRequest request)
         {
@@ -70,7 +78,12 @@ namespace AuthMicroservice.Controller
             var app = applications.FirstOrDefault(a => a.AppKey == appKey);
             if (app == null) return (false, null);
 
-            var isValid = await _applicationService.ValidateAppKeyAndSecretAsync(appKey, app.AppSecret);
+            // [Authorize] has already validated the JWT itself; this confirms the token's
+            // own tenant (ApplicationId claim) matches the AppKey-resolved tenant for this
+            // request, so a valid token for tenant A can't be replayed against tenant B's
+            // AppKey.
+            var applicationIdClaim = User.FindFirst("ApplicationId")?.Value;
+            var isValid = !string.IsNullOrEmpty(applicationIdClaim) && applicationIdClaim == app.Id.ToString();
             return (isValid, app);
         }
     }

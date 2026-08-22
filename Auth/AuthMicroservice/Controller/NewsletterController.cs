@@ -1,6 +1,7 @@
 using AuthMicroservice.Model;
 using AuthMicroservice.Repository;
 using AuthMicroservice.Service;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.Mail;
 using Microsoft.AspNetCore.Http;
@@ -9,11 +10,14 @@ namespace AuthMicroservice.Controller
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class NewsletterController : ControllerBase
     {
         private readonly IApplicationService _applicationService;
         private readonly IUserService _userService;
         private readonly ISmtpConfigService _smtpConfigService;
+        private readonly IFacebookConfigService _facebookConfigService;
+        private readonly IWhatsappConfigService _whatsappConfigService;
         private readonly IEmailService _emailService;
         private readonly ISubscriberService _subscriberService;
         private readonly IContactRepository _contactRepository;
@@ -22,6 +26,8 @@ namespace AuthMicroservice.Controller
             IApplicationService applicationService,
             IUserService userService,
             ISmtpConfigService smtpConfigService,
+            IFacebookConfigService facebookConfigService,
+            IWhatsappConfigService whatsappConfigService,
             IEmailService emailService,
             ISubscriberService subscriberService,
             IContactRepository contactRepository)
@@ -29,6 +35,8 @@ namespace AuthMicroservice.Controller
             _applicationService = applicationService;
             _userService = userService;
             _smtpConfigService = smtpConfigService;
+            _facebookConfigService = facebookConfigService;
+            _whatsappConfigService = whatsappConfigService;
             _emailService = emailService;
             _subscriberService = subscriberService;
             _contactRepository = contactRepository;
@@ -48,7 +56,7 @@ namespace AuthMicroservice.Controller
         [HttpGet("smtp-configs")]
         public async Task<IActionResult> GetSmtpConfigs([FromHeader(Name = "AppKey")] string appKey)
         {
-            var (isValid, app) = await IsValidAppKey(appKey);
+            var (isValid, app) = await ResolveAuthorizedTenant(appKey);
             if (!isValid)
                 return Unauthorized(new { message = "Invalid AppKey or AppSecret" });
 
@@ -59,7 +67,7 @@ namespace AuthMicroservice.Controller
         [HttpGet("smtp-configs/{id}")]
         public async Task<IActionResult> GetSmtpConfig(string id, [FromHeader(Name = "AppKey")] string appKey)
         {
-            var (isValid, app) = await IsValidAppKey(appKey);
+            var (isValid, app) = await ResolveAuthorizedTenant(appKey);
             if (!isValid)
                 return Unauthorized(new { message = "Invalid AppKey or AppSecret" });
 
@@ -73,7 +81,7 @@ namespace AuthMicroservice.Controller
         [HttpPost("smtp-configs")]
         public async Task<IActionResult> CreateSmtpConfig([FromBody] SmtpConfig smtpConfig, [FromHeader(Name = "AppKey")] string appKey)
         {
-            var (isValid, app) = await IsValidAppKey(appKey);
+            var (isValid, app) = await ResolveAuthorizedTenant(appKey);
             if (!isValid)
                 return Unauthorized(new { message = "Invalid AppKey or AppSecret" });
 
@@ -88,7 +96,7 @@ namespace AuthMicroservice.Controller
         [HttpPut("smtp-configs/{id}")]
         public async Task<IActionResult> UpdateSmtpConfig(string id, [FromBody] SmtpConfig smtpConfig, [FromHeader(Name = "AppKey")] string appKey)
         {
-            var (isValid, app) = await IsValidAppKey(appKey);
+            var (isValid, app) = await ResolveAuthorizedTenant(appKey);
             if (!isValid)
                 return Unauthorized(new { message = "Invalid AppKey or AppSecret" });
 
@@ -102,7 +110,7 @@ namespace AuthMicroservice.Controller
         [HttpDelete("smtp-configs/{id}")]
         public async Task<IActionResult> DeleteSmtpConfig(string id, [FromHeader(Name = "AppKey")] string appKey)
         {
-            var (isValid, app) = await IsValidAppKey(appKey);
+            var (isValid, app) = await ResolveAuthorizedTenant(appKey);
             if (!isValid)
                 return Unauthorized(new { message = "Invalid AppKey or AppSecret" });
 
@@ -114,12 +122,156 @@ namespace AuthMicroservice.Controller
             return NoContent();
         }
 
+        // Facebook Configuration Management
+
+        [HttpGet("facebook-configs")]
+        public async Task<IActionResult> GetFacebookConfigs([FromHeader(Name = "AppKey")] string appKey)
+        {
+            var (isValid, app) = await ResolveAuthorizedTenant(appKey);
+            if (!isValid)
+                return Unauthorized(new { message = "Invalid AppKey or AppSecret" });
+
+            var configs = await _facebookConfigService.GetFacebookConfigsAsync();
+            return Ok(configs.Where(c => c.ApplicationId == app.Id).Select(ToFacebookConfigDto));
+        }
+
+        [HttpGet("facebook-configs/{id}")]
+        public async Task<IActionResult> GetFacebookConfig(string id, [FromHeader(Name = "AppKey")] string appKey)
+        {
+            var (isValid, app) = await ResolveAuthorizedTenant(appKey);
+            if (!isValid)
+                return Unauthorized(new { message = "Invalid AppKey or AppSecret" });
+
+            var config = await _facebookConfigService.GetFacebookConfigAsync(new Guid(id));
+            if (config == null || config.ApplicationId != app.Id)
+                return NotFound();
+
+            return Ok(ToFacebookConfigDto(config));
+        }
+
+        [HttpPost("facebook-configs")]
+        public async Task<IActionResult> CreateFacebookConfig([FromBody] FacebookConfig facebookConfig, [FromHeader(Name = "AppKey")] string appKey)
+        {
+            var (isValid, app) = await ResolveAuthorizedTenant(appKey);
+            if (!isValid)
+                return Unauthorized(new { message = "Invalid AppKey or AppSecret" });
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            facebookConfig.ApplicationId = app.Id;
+            var createdConfig = await _facebookConfigService.CreateFacebookConfigAsync(facebookConfig);
+            return CreatedAtAction(nameof(GetFacebookConfig), new { id = createdConfig.Id }, ToFacebookConfigDto(createdConfig));
+        }
+
+        [HttpPut("facebook-configs/{id}")]
+        public async Task<IActionResult> UpdateFacebookConfig(string id, [FromBody] FacebookConfig facebookConfig, [FromHeader(Name = "AppKey")] string appKey)
+        {
+            var (isValid, app) = await ResolveAuthorizedTenant(appKey);
+            if (!isValid)
+                return Unauthorized(new { message = "Invalid AppKey or AppSecret" });
+
+            if (id != facebookConfig.Id.ToString())
+                return BadRequest();
+
+            var existing = await _facebookConfigService.GetFacebookConfigAsync(new Guid(id));
+            if (existing == null || existing.ApplicationId != app.Id)
+                return NotFound();
+
+            await _facebookConfigService.UpdateFacebookConfigAsync(new Guid(id), facebookConfig);
+            return NoContent();
+        }
+
+        private static object ToFacebookConfigDto(FacebookConfig config) => new
+        {
+            config.Id,
+            config.PageId,
+            config.PageName,
+            config.ConnectionStatus,
+            config.ApplicationId,
+            config.CreatedDate,
+        };
+
+        // WhatsApp Configuration Management
+
+        [HttpGet("whatsapp-configs")]
+        public async Task<IActionResult> GetWhatsappConfigs([FromHeader(Name = "AppKey")] string appKey)
+        {
+            var (isValid, app) = await ResolveAuthorizedTenant(appKey);
+            if (!isValid)
+                return Unauthorized(new { message = "Invalid AppKey or AppSecret" });
+
+            var configs = await _whatsappConfigService.GetWhatsappConfigsAsync();
+            return Ok(configs.Where(c => c.ApplicationId == app.Id).Select(ToWhatsappConfigDto));
+        }
+
+        [HttpGet("whatsapp-configs/{id}")]
+        public async Task<IActionResult> GetWhatsappConfig(string id, [FromHeader(Name = "AppKey")] string appKey)
+        {
+            var (isValid, app) = await ResolveAuthorizedTenant(appKey);
+            if (!isValid)
+                return Unauthorized(new { message = "Invalid AppKey or AppSecret" });
+
+            var config = await _whatsappConfigService.GetWhatsappConfigAsync(new Guid(id));
+            if (config == null || config.ApplicationId != app.Id)
+                return NotFound();
+
+            return Ok(ToWhatsappConfigDto(config));
+        }
+
+        [HttpPost("whatsapp-configs")]
+        public async Task<IActionResult> CreateWhatsappConfig([FromBody] WhatsappConfig whatsappConfig, [FromHeader(Name = "AppKey")] string appKey)
+        {
+            var (isValid, app) = await ResolveAuthorizedTenant(appKey);
+            if (!isValid)
+                return Unauthorized(new { message = "Invalid AppKey or AppSecret" });
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            whatsappConfig.ApplicationId = app.Id;
+            var createdConfig = await _whatsappConfigService.CreateWhatsappConfigAsync(whatsappConfig);
+            return CreatedAtAction(nameof(GetWhatsappConfig), new { id = createdConfig.Id }, ToWhatsappConfigDto(createdConfig));
+        }
+
+        [HttpPut("whatsapp-configs/{id}")]
+        public async Task<IActionResult> UpdateWhatsappConfig(string id, [FromBody] WhatsappConfig whatsappConfig, [FromHeader(Name = "AppKey")] string appKey)
+        {
+            var (isValid, app) = await ResolveAuthorizedTenant(appKey);
+            if (!isValid)
+                return Unauthorized(new { message = "Invalid AppKey or AppSecret" });
+
+            if (id != whatsappConfig.Id.ToString())
+                return BadRequest();
+
+            var existing = await _whatsappConfigService.GetWhatsappConfigAsync(new Guid(id));
+            if (existing == null || existing.ApplicationId != app.Id)
+                return NotFound();
+
+            await _whatsappConfigService.UpdateWhatsappConfigAsync(new Guid(id), whatsappConfig);
+            return NoContent();
+        }
+
+        private static object ToWhatsappConfigDto(WhatsappConfig config) => new
+        {
+            config.Id,
+            config.BusinessAccountId,
+            config.PhoneNumberId,
+            config.DisplayPhoneNumber,
+            config.ConnectionStatus,
+            config.ApplicationId,
+            config.CreatedDate,
+        };
+
         // Subscriber Management
 
+        // Public opt-in / contact-form endpoints, called by anonymous site visitors, not
+        // the logged-in admin UI.
+        [AllowAnonymous]
         [HttpPost("subscribe")]
         public async Task<IActionResult> Subscribe([FromBody] SubscriberRequest request, [FromHeader(Name = "AppKey")] string appKey)
         {
-            var (isValid, app) = await IsValidAppKey(appKey);
+            var (isValid, app) = await ResolveTenant(appKey);
             if (!isValid)
                 return Unauthorized(new { message = "Invalid AppKey or AppSecret" });
 
@@ -130,10 +282,11 @@ namespace AuthMicroservice.Controller
 
         // Contact with us
 
+        [AllowAnonymous]
         [HttpPost("contactwithus")]
         public async Task<IActionResult> ContactWithUS([FromBody] ContactWithUSReqest request, [FromHeader(Name = "AppKey")] string appKey)
         {
-            var (isValid, app) = await IsValidAppKey(appKey);
+            var (isValid, app) = await ResolveTenant(appKey);
             if (!isValid)
                 return Unauthorized(new { message = "Invalid AppKey or AppSecret" });
 
@@ -219,10 +372,11 @@ namespace AuthMicroservice.Controller
             return Ok(subscriber);
         }
 
+        [AllowAnonymous]
         [HttpPost("contactwithattachment")]
         public async Task<IActionResult> ContactWithAttachment([FromForm] ContactWithAttachmentRequest request, [FromHeader(Name = "AppKey")] string appKey)
         {
-            var (isValid, app) = await IsValidAppKey(appKey);
+            var (isValid, app) = await ResolveTenant(appKey);
             if (!isValid)
                 return Unauthorized(new { message = "Invalid AppKey or AppSecret" });
 
@@ -317,10 +471,11 @@ namespace AuthMicroservice.Controller
             return Ok(subscriber);
         }
 
+        [AllowAnonymous]
         [HttpPost("unsubscribe")]
         public async Task<IActionResult> Unsubscribe([FromBody] SubscriberRequest request, [FromHeader(Name = "AppKey")] string appKey)
         {
-            var (isValid, app) = await IsValidAppKey(appKey);
+            var (isValid, app) = await ResolveTenant(appKey);
             if (!isValid)
                 return Unauthorized(new { message = "Invalid AppKey or AppSecret" });
 
@@ -331,7 +486,7 @@ namespace AuthMicroservice.Controller
         [HttpGet("subscribers")]
         public async Task<IActionResult> GetSubscribers([FromHeader(Name = "AppKey")] string appKey)
         {
-            var (isValid, app) = await IsValidAppKey(appKey);
+            var (isValid, app) = await ResolveAuthorizedTenant(appKey);
             if (!isValid)
                 return Unauthorized(new { message = "Invalid AppKey or AppSecret" });
 
@@ -344,7 +499,7 @@ namespace AuthMicroservice.Controller
         [HttpPost("send-to-subscribers")]
         public async Task<IActionResult> SendToSubscribers([FromBody] EmailContentRequest request, [FromHeader(Name = "AppKey")] string appKey)
         {
-            var (isValid, app) = await IsValidAppKey(appKey);
+            var (isValid, app) = await ResolveAuthorizedTenant(appKey);
             if (!isValid)
                 return Unauthorized(new { message = "Invalid AppKey or AppSecret" });
 
@@ -377,7 +532,7 @@ namespace AuthMicroservice.Controller
         [HttpPost("send-by-group/{groupName}")]
         public async Task<IActionResult> SendByGroup(string groupName, [FromBody] EmailContentRequest request, [FromHeader(Name = "AppKey")] string appKey)
         {
-            var (isValid, app) = await IsValidAppKey(appKey);
+            var (isValid, app) = await ResolveAuthorizedTenant(appKey);
             if (!isValid)
                 return Unauthorized(new { message = "Invalid AppKey or AppSecret" });
 
@@ -406,7 +561,7 @@ namespace AuthMicroservice.Controller
         [HttpGet("history")]
         public async Task<IActionResult> GetEmailHistory([FromHeader(Name = "AppKey")] string appKey)
         {
-            var (isValid, app) = await IsValidAppKey(appKey);
+            var (isValid, app) = await ResolveAuthorizedTenant(appKey);
             if (!isValid)
                 return Unauthorized(new { message = "Invalid AppKey or AppSecret" });
 
@@ -414,13 +569,28 @@ namespace AuthMicroservice.Controller
             return Ok(history);
         }
 
-        private async Task<(bool, Application)> IsValidAppKey(string appKey)
+        // Used by the [AllowAnonymous] public endpoints (subscribe/unsubscribe/contact
+        // forms) — there is no signed-in user to cross-check here, only that the AppKey
+        // resolves to a real tenant.
+        private async Task<(bool, Application)> ResolveTenant(string appKey)
+        {
+            var applications = await _applicationService.GetApplicationsAsync(appKey);
+            var app = applications.FirstOrDefault(a => a.AppKey == appKey);
+            return (app != null, app);
+        }
+
+        // Used by [Authorize]-protected endpoints. [Authorize] has already validated the
+        // JWT itself; this confirms the token's own tenant (ApplicationId claim) matches
+        // the AppKey-resolved tenant for this request, so a valid token for tenant A can't
+        // be replayed against tenant B's AppKey.
+        private async Task<(bool, Application)> ResolveAuthorizedTenant(string appKey)
         {
             var applications = await _applicationService.GetApplicationsAsync(appKey);
             var app = applications.FirstOrDefault(a => a.AppKey == appKey);
             if (app == null) return (false, null);
 
-            var isValid = await _applicationService.ValidateAppKeyAndSecretAsync(appKey, app.AppSecret);
+            var applicationIdClaim = User.FindFirst("ApplicationId")?.Value;
+            var isValid = !string.IsNullOrEmpty(applicationIdClaim) && applicationIdClaim == app.Id.ToString();
             return (isValid, app);
         }
     }

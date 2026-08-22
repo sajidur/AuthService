@@ -1,3 +1,5 @@
+using System;
+using System.Net.Http;
 using AuthMicroservice.Repository;
 using AuthMicroservice.Service;
 
@@ -14,6 +16,8 @@ namespace AuthMicroservice
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IUserRoleRepository, UserRoleRepository>();
             services.AddScoped<ISmtpConfigRepository, SmtpConfigRepository>();
+            services.AddScoped<IFacebookConfigRepository, FacebookConfigRepository>();
+            services.AddScoped<IWhatsappConfigRepository, WhatsappConfigRepository>();
             services.AddScoped<IEmailHistoryRepository, EmailHistoryRepository>();
             services.AddScoped<ISubscriberRepository, SubscriberRepository>();
             services.AddScoped<IContactRepository, ContactRepository>();
@@ -26,6 +30,10 @@ namespace AuthMicroservice
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IApplicationService, ApplicationService>();
             services.AddScoped<ISmtpConfigService, SmtpConfigService>();
+            services.AddScoped<IFacebookConfigService, FacebookConfigService>();
+            services.AddScoped<IWhatsappConfigService, WhatsappConfigService>();
+            services.AddScoped<IFacebookService, FacebookService>();
+            services.AddScoped<IWhatsappService, WhatsappService>();
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<ISubscriberService, SubscriberService>();
             services.AddScoped<IContactService, ContactService>();
@@ -33,9 +41,23 @@ namespace AuthMicroservice
             services.AddScoped<IVerificationService, VerificationService>();
             services.AddScoped<IContactActivityService, ContactActivityService>();
             services.AddScoped<ISmsService, SmsService>();
+            services.AddScoped<IWebCrawlerService, WebCrawlerService>();
             services.AddHttpClient();
+            // Auto-redirect disabled so WebCrawlerService can re-validate each redirect hop's
+            // resolved address before following it (see WebCrawlerService.FetchSafeAsync).
+            services.AddHttpClient(WebCrawlerService.HttpClientName, client =>
+                {
+                    client.Timeout = TimeSpan.FromSeconds(15);
+                })
+                .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
+                {
+                    AllowAutoRedirect = false,
+                });
 
             services.AddMemoryCache();
+            services.AddHttpContextAccessor();
+            services.AddSingleton<ITenantKeyProvider, TenantKeyProvider>();
+            services.AddSingleton<IContactExtractionService, ContactExtractionService>();
 
             return services;
         }

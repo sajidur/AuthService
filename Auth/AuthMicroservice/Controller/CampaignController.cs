@@ -1,5 +1,6 @@
 using AuthMicroservice.Model;
 using AuthMicroservice.Service;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Linq;
@@ -9,6 +10,7 @@ namespace AuthMicroservice.Controller
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class CampaignController : ControllerBase
     {
         private readonly ICampaignService _campaignService;
@@ -118,7 +120,12 @@ namespace AuthMicroservice.Controller
             var app = applications.FirstOrDefault(a => a.AppKey == appKey);
             if (app == null) return (false, null);
 
-            var isValid = await _applicationService.ValidateAppKeyAndSecretAsync(appKey, app.AppSecret);
+            // [Authorize] has already validated the JWT itself; this confirms the token's
+            // own tenant (ApplicationId claim) matches the AppKey-resolved tenant for this
+            // request, so a valid token for tenant A can't be replayed against tenant B's
+            // AppKey.
+            var applicationIdClaim = User.FindFirst("ApplicationId")?.Value;
+            var isValid = !string.IsNullOrEmpty(applicationIdClaim) && applicationIdClaim == app.Id.ToString();
             return (isValid, app);
         }
     }
